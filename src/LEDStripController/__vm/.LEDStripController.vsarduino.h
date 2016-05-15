@@ -64,4 +64,8 @@ extern "C" void __cxa_pure_virtual() {;}
 #define portInputRegister(P)
 #define portModeRegister(P)
 #include <..\LEDStripController\LEDStripController.ino>
+#include <..\LEDStripController\MqttHelper.cpp>
+#include <..\LEDStripController\MqttHelper.h>
+#include <..\LEDStripController\SensitiveData.cpp>
+#include <..\LEDStripController\SensitiveData.h>
 #endif
