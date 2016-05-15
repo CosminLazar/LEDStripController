@@ -23,5 +23,5 @@ void loop() {
 void statusRequested(void* data) {
 	char buff[10];
 	char * freeMem = itoa(freeMemory(), buff, 10);
-	mqtt.publish("status", freeMem);
+	mqtt.publish(F("status"), freeMem);
 }

@@ -68,7 +68,7 @@ void MqttHelperClass::wifiCallback(void * response)
 
 void MqttHelperClass::mqttConnected(void* response) {
 	mqttIsConnected = true;
-	mqtt->publish("/topic/0", "hello world!");
+	publish(F("/topic/0"), "hello world!");
 
 	for (size_t i = 0; i < subscriptionList.size(); i++)
 	{
@@ -114,6 +114,13 @@ void MqttHelperClass::subscribe(const char * topic, FP<void, void*> callback) {
 
 void MqttHelperClass::publish(const char * topic, char * data) {
 	mqtt->publish(topic, data);
+}
+
+void MqttHelperClass::publish(const __FlashStringHelper * topic, char * data)
+{
+	char buff[32];
+	char * topicStr = strcpy_P(buff, (const char *)topic);
+	publish(topicStr, data);
 }
 
 MqttHelperClass MqttHelper;

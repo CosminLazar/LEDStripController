@@ -38,6 +38,7 @@ public:
 	void process();
 	void subscribe(const char * topic, FP<void, void*> callback);
 	void publish(const char * topic, char * data);
+	void publish(const __FlashStringHelper* topic, char * data);
 };
 
 extern MqttHelperClass MqttHelper;
