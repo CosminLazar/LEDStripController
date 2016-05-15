@@ -25,6 +25,12 @@
     <Filter Include="_libraries\espduino">
       <UniqueIdentifier>{e17cf195-d842-41ee-b7d3-a57b7094e3ec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="_libraries\LinkedList">
+      <UniqueIdentifier>{d8d8f9a7-4669-4472-9027-97b5710871ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_libraries\HashMap">
+      <UniqueIdentifier>{00cc5095-aafa-4a08-9b87-ccedfd21e151}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="LEDStripController.ino" />
@@ -122,6 +128,12 @@
     </ClInclude>
     <ClInclude Include="SensitiveData.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libraries\LinkedList\LinkedList.h">
+      <Filter>_libraries\LinkedList</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libraries\HashMap\HashMap.h">
+      <Filter>_libraries\HashMap</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

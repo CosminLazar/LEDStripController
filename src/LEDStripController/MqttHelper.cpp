@@ -53,6 +53,12 @@ void MqttHelperClass::wifiCallback(void * response)
 void MqttHelperClass::mqttConnected(void* response) {
 	mqttIsConnected = true;
 	mqtt->publish("/topic/0", "hello world!");
+
+	for (size_t i = 0; i < subscriptionList.size(); i++)
+	{
+		const char * topic = subscriptionList.keyAt(i);
+		mqtt->subscribe(topic);
+	}
 }
 
 void MqttHelperClass::mqttDisconnected(void* response) {
@@ -63,10 +69,35 @@ void MqttHelperClass::mqttDataCallback(void* response) {
 	RESPONSE res(response);
 	String topic = res.popString();
 	String data = res.popString();
+	const char * topicCStr = topic.c_str();
+
+	if (subscriptionList.contains(topicCStr)) {
+		for (size_t i = 0; i < subscriptionList[topicCStr]->size(); i++)
+		{
+			subscriptionList[topicCStr]->get(i)(response);
+		}
+	}
+}
+
+bool MqttHelperClass::topicComparator(const char * a, const char * b)
+{
+	return strcmp(a, b) == 0;
 }
 
 void MqttHelperClass::process() {
 	esp->process();
+}
+
+void MqttHelperClass::subscribe(const char * topic, FP<void, void*> callback) {
+	if (!subscriptionList.contains(topic)) {
+		subscriptionList[topic] = new LinkedList<FP<void, void*>>();
+	}
+
+	subscriptionList[topic]->add(callback);
+}
+
+void MqttHelperClass::publish(const char * topic, char * data) {
+	mqtt->publish(topic, data);
 }
 
 MqttHelperClass MqttHelper;
