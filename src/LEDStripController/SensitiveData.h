@@ -11,12 +11,12 @@
 class SensitiveData
 {
 public:
-	static const char * WIFI_SSID;
-	static const char * WIFI_PASSWORD;
-	static const char * MQTT_HOST;
-	static const char * MQTT_CLIENT;
-	static const char * MQTT_USER;
-	static const char * MQTT_PASSWORD;
+	static void Read_WIFI_SSID(char * buffer);
+	static void Read_WIFI_PASSWORD(char * buffer);
+	static void Read_MQTT_HOST(char * buffer);
+	static void Read_MQTT_CLIENT(char * buffer);
+	static void Read_MQTT_USER(char * buffer);
+	static void Read_MQTT_PASSWORD(char * buffer);
 };
 
 #endif

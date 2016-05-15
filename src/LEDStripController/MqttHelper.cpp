@@ -17,7 +17,14 @@ void MqttHelperClass::init()
 
 	while (!esp->ready());
 
-	if (!mqtt->begin(SensitiveData::MQTT_CLIENT, SensitiveData::MQTT_USER, SensitiveData::MQTT_PASSWORD, 120, 1))
+	char mqttClient[10];
+	char mqttUser[10];
+	char mqttPassword[10];
+	SensitiveData::Read_MQTT_CLIENT(mqttClient);
+	SensitiveData::Read_MQTT_USER(mqttUser);
+	SensitiveData::Read_MQTT_PASSWORD(mqttPassword);
+
+	if (!mqtt->begin(mqttClient, mqttUser, mqttPassword, 120, 1))
 		while (1);
 
 	mqtt->lwt("/lwt", "offline", 0, 0);
@@ -27,7 +34,14 @@ void MqttHelperClass::init()
 	mqtt->dataCb.attach(this, &MqttHelperClass::mqttDataCallback);
 
 	esp->wifiCb.attach(this, &MqttHelperClass::wifiCallback);
-	esp->wifiConnect(SensitiveData::WIFI_SSID, SensitiveData::WIFI_PASSWORD);
+
+	char ssid[5];
+	SensitiveData::Read_WIFI_SSID(ssid);
+
+	char password[30];
+	SensitiveData::Read_WIFI_PASSWORD(password);
+
+	esp->wifiConnect(ssid, password);
 }
 
 void MqttHelperClass::wifiCallback(void * response)
@@ -40,7 +54,9 @@ void MqttHelperClass::wifiCallback(void * response)
 
 		if (status == STATION_GOT_IP) {
 			//WIFI connected			
-			mqtt->connect(SensitiveData::MQTT_HOST, 1883);
+			char mqttHost[10];
+			SensitiveData::Read_MQTT_HOST(mqttHost);
+			mqtt->connect(mqttHost, 1883);
 			wifiConnected = true;
 		}
 		else {
