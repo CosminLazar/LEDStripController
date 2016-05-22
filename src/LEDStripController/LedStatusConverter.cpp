@@ -10,6 +10,16 @@ LedStatusClass LedStatusConverterClass::FromStr(const char * str)
 	return LedStatusClass(ledParams[0], ledParams[1], ledParams[2], ledParams[3], ledParams[4]);
 }
 
+void LedStatusConverterClass::ToStr(LedStatusClass data, char * buff)
+{
+	uint8_t offset = 0;
+	offset += sprintf(&buff[offset], "%d;", data.isOn());
+	offset += sprintf(&buff[offset], "%d;", data.get_R());
+	offset += sprintf(&buff[offset], "%d;", data.get_G());
+	offset += sprintf(&buff[offset], "%d;", data.get_B());
+	offset += sprintf(&buff[offset], "%d;", data.get_Brigthness());
+}
+
 void LedStatusConverterClass::ParseStr(const char * str, uint8_t * valueBuff, uint8_t len)
 {
 	uint8_t dataLen = strlen(str);

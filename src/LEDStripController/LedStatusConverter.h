@@ -14,6 +14,7 @@ class LedStatusConverterClass
 {
  public:
 	 static LedStatusClass FromStr(const char * str);
+	 static void ToStr(LedStatusClass data, char * buff);
 private:
 	static void ParseStr(const char * str, uint8_t * valueBuff, uint8_t len);
 };
