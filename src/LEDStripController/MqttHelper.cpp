@@ -86,11 +86,12 @@ void MqttHelperClass::mqttDataCallback(void* response) {
 	String topic = res.popString();
 	String data = res.popString();
 	const char * topicCStr = topic.c_str();
+	const char * dataCStr = data.c_str();
 
 	if (subscriptionList.contains(topicCStr)) {
 		for (size_t i = 0; i < subscriptionList[topicCStr]->size(); i++)
 		{
-			subscriptionList[topicCStr]->get(i)(response);
+			subscriptionList[topicCStr]->get(i)(dataCStr);
 		}
 	}
 }
@@ -104,9 +105,9 @@ void MqttHelperClass::process() {
 	esp->process();
 }
 
-void MqttHelperClass::subscribe(const char * topic, FP<void, void*> callback) {
+void MqttHelperClass::subscribe(const char * topic, FP<void, const char *> callback) {
 	if (!subscriptionList.contains(topic)) {
-		subscriptionList[topic] = new LinkedList<FP<void, void*>>();
+		subscriptionList[topic] = new LinkedList<FP<void, const char *>>();
 	}
 
 	subscriptionList[topic]->add(callback);

@@ -23,7 +23,7 @@ class MqttHelperClass
 private:
 	ESP *esp;
 	MQTT *mqtt;
-	HashMap<const char *, LinkedList<FP<void, void*>>*, MAX_SUBSCRIPTIONS> subscriptionList = HashMap<const char*, LinkedList<FP<void, void*>>*, MAX_SUBSCRIPTIONS>(&topicComparator);
+	HashMap<const char *, LinkedList<FP<void, const char *>>*, MAX_SUBSCRIPTIONS> subscriptionList = HashMap<const char*, LinkedList<FP<void, const char *>>*, MAX_SUBSCRIPTIONS>(&topicComparator);
 
 	void wifiCallback(void* response);
 	void mqttConnected(void* response);
@@ -36,7 +36,7 @@ public:
 	MqttHelperClass();
 	void init();
 	void process();
-	void subscribe(const char * topic, FP<void, void*> callback);
+	void subscribe(const char * topic, FP<void, const char *> callback);
 	void publish(const char * topic, char * data);
 	void publish(const __FlashStringHelper* topic, char * data);
 };

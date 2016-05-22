@@ -64,6 +64,7 @@ retT FP<retT, argT>::operator()(argT arg) const
 // pre-define the types for the linker
 template class FP<void,char>;
 template class FP<void,char*>;
+template class FP<void, const char *>;
 template class FP<void,int8_t>;
 template class FP<void,int8_t*>;
 template class FP<void,uint8_t>;

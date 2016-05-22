@@ -8,9 +8,9 @@ MqttHelperClass mqtt;
 
 void setup() {
 
-	FP<void, void*> s;
+	FP<void, const char *> s;
 	s.attach(&statusRequested);
-	mqtt.subscribe("statusreq", s);
+	mqtt.subscribe("st", s);
 
 	mqtt.init();
 }
@@ -20,8 +20,8 @@ void loop() {
 	mqtt.process();
 }
 
-void statusRequested(void* data) {
+void statusRequested(const char * data) {
 	char buff[10];
 	char * freeMem = itoa(freeMemory(), buff, 10);
-	mqtt.publish(F("status"), freeMem);
+	mqtt.publish(F("str"), freeMem);
 }
