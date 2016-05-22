@@ -124,5 +124,4 @@ void MqttHelperClass::publish(const __FlashStringHelper * topic, char * data)
 	publish(topicStr, data);
 }
 
-MqttHelperClass MqttHelper;
 
