@@ -19,3 +19,8 @@ uint8_t LedStatusClass::get_B()
 {
 	return _b;
 }
+
+uint8_t LedStatusClass::get_Brigthness()
+{
+	return _brigtness;
+}

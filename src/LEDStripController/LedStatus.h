@@ -16,12 +16,16 @@ private:
 	uint8_t _r;
 	uint8_t _g;
 	uint8_t _b;
+	uint8_t _brigtness;
 public:
-	LedStatusClass(uint8_t isOn, uint8_t r, uint8_t g, uint8_t b) :_isOn(isOn), _r(r), _g(g), _b(b) {};
+	LedStatusClass(uint8_t isOn, uint8_t r, uint8_t g, uint8_t b, uint8_t brigtness) 
+		:_isOn(isOn), _r(r), _g(g), _b(b), _brigtness(brigtness) {};
+
 	bool isOn();
 	uint8_t get_R();
 	uint8_t get_G();
-	uint8_t get_B();
+	uint8_t get_B();	
+	uint8_t get_Brigthness();
 };
 
 extern LedStatusClass LedStatus;

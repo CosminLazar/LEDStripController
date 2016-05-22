@@ -2,12 +2,12 @@
 
 LedStatusClass LedStatusConverterClass::FromStr(const char * str)
 {
-	const uint8_t AcceptableParams = 4;
+	const uint8_t AcceptableParams = 5;
 
 	uint8_t ledParams[AcceptableParams] = {};
 	ParseStr(str, ledParams, AcceptableParams);
 
-	return LedStatusClass(ledParams[0], ledParams[1], ledParams[2], ledParams[3]);
+	return LedStatusClass(ledParams[0], ledParams[1], ledParams[2], ledParams[3], ledParams[4]);
 }
 
 void LedStatusConverterClass::ParseStr(const char * str, uint8_t * valueBuff, uint8_t len)

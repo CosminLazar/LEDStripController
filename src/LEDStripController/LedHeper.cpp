@@ -24,6 +24,7 @@ void LedHeperClass::allWhite()
 void LedHeperClass::set(LedStatusClass status)
 {
 	strip->clear();
+	strip->setBrightness(status.get_Brigthness());
 
 	if (status.isOn()) {
 		for (uint16_t i = 0; i < strip->numPixels(); i++)
@@ -31,7 +32,7 @@ void LedHeperClass::set(LedStatusClass status)
 			strip->setPixelColor(i, status.get_R(), status.get_G(), status.get_B());
 		}
 	}
-
+	
 	strip->show();
 }
 
