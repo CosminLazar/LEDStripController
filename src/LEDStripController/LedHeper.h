@@ -9,6 +9,7 @@
 	#include "WProgram.h"
 #endif
 #include <Adafruit_NeoPixel.h>
+#include "LedStatus.h"
 
 class LedHeperClass
 {
@@ -19,6 +20,7 @@ class LedHeperClass
 	 LedHeperClass(uint8_t noOfLeds, uint8_t pin);
 	void init();
 	void allWhite();
+	void set(LedStatusClass status);
 };
 
 extern LedHeperClass LedHeper;

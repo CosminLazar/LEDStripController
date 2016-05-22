@@ -144,6 +144,12 @@
     <ClInclude Include="..\..\..\libraries\Adafruit_NeoPixel\Adafruit_NeoPixel.h">
       <Filter>_libraries\Adafruit_NeoPixel</Filter>
     </ClInclude>
+    <ClInclude Include="LedStatus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LedStatusConverter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\abi.cpp">
@@ -253,6 +259,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\libraries\Adafruit_NeoPixel\esp8266.c">
       <Filter>_libraries\Adafruit_NeoPixel</Filter>
+    </ClCompile>
+    <ClCompile Include="LedStatus.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LedStatusConverter.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

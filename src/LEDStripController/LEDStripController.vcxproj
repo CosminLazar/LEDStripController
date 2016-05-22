@@ -66,7 +66,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino;C:\Program Files (x86)\Arduino\hardware\arduino\avr\variants\standard;C:\Users\cosmin\Documents\Arduino\LEDStripController\src\LEDStripController;C:\Users\cosmin\Documents\Arduino\libraries\Adafruit_NeoPixel;C:\Users\cosmin\Documents\Arduino\libraries\Adafruit_NeoPixel\utility;C:\Users\cosmin\Documents\Arduino\libraries\espduino;C:\Users\cosmin\Documents\Arduino\libraries\espduino\utility;C:\Users\cosmin\Documents\Arduino\libraries\MemoryFree;C:\Users\cosmin\Documents\Arduino\libraries\MemoryFree\utility;C:\Program Files (x86)\Arduino\libraries;C:\Program Files (x86)\Arduino\hardware\arduino\avr\libraries;C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\1it3ebbp.hef\Micro Platforms\default\debuggers;C:\Users\cosmin\Documents\Arduino\libraries;C:\Program Files (x86)\Arduino\hardware\tools\avr/avr/include/;C:\Program Files (x86)\Arduino\hardware\tools\avr//avr/include/avr/;C:\Program Files (x86)\Arduino\hardware\tools\avr/lib\gcc\avr\4.8.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino;C:\Program Files (x86)\Arduino\hardware\arduino\avr\variants\standard;C:\Users\cosmin\Documents\Arduino\LEDStripController\src\LEDStripController;C:\Users\cosmin\Documents\Arduino\libraries\Adafruit_NeoPixel;C:\Users\cosmin\Documents\Arduino\libraries\Adafruit_NeoPixel\utility;C:\Users\cosmin\Documents\Arduino\libraries\espduino;C:\Users\cosmin\Documents\Arduino\libraries\espduino\utility;C:\Users\cosmin\Documents\Arduino\libraries\MemoryFree;C:\Users\cosmin\Documents\Arduino\libraries\MemoryFree\utility;C:\Program Files (x86)\Arduino\libraries;C:\Program Files (x86)\Arduino\hardware\arduino\avr\libraries;C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\1it3ebbp.hef\Micro Platforms\default\debuggers;C:\Users\cosmin\Documents\Arduino\libraries;C:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino;C:\Program Files (x86)\Arduino\hardware\arduino\avr\variants\standard;C:\Users\cosmin\Documents\Arduino\libraries\Adafruit_NeoPixel;C:\Users\cosmin\Documents\Arduino\libraries\espduino;C:\Users\cosmin\Documents\Arduino\libraries\LinkedList;C:\Users\cosmin\Documents\Arduino\libraries\HashMap;C:\Users\cosmin\Documents\Arduino\libraries\MemoryFree;C:\Program Files (x86)\Arduino\libraries;C:\Program Files (x86)\Arduino\hardware\arduino\avr\libraries;C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\1it3ebbp.hef\Micro Platforms\default\debuggers;C:\Users\cosmin\Documents\Arduino\libraries;C:\Program Files (x86)\Arduino\hardware\tools\avr/avr/include/;C:\Program Files (x86)\Arduino\hardware\tools\avr//avr/include/avr/;C:\Program Files (x86)\Arduino\hardware\tools\avr/lib\gcc\avr\4.8.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>C:\Users\cosmin\Documents\Arduino\LEDStripController\src\LEDStripController\__vm\.LEDStripController.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <PreprocessorDefinitions>__AVR_ATmega328p__;__AVR_ATmega328P__;F_CPU=16000000L;ARDUINO=10608;ARDUINO_AVR_UNO;ARDUINO_ARCH_AVR;__cplusplus=201103L;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -115,6 +115,8 @@
     <ClInclude Include="..\..\..\libraries\LinkedList\LinkedList.h" />
     <ClInclude Include="..\..\..\libraries\MemoryFree\MemoryFree.h" />
     <ClInclude Include="LedHeper.h" />
+    <ClInclude Include="LedStatus.h" />
+    <ClInclude Include="LedStatusConverter.h" />
     <ClInclude Include="MqttHelper.h" />
     <ClInclude Include="SensitiveData.h" />
     <ClInclude Include="__vm\.LEDStripController.vsarduino.h" />
@@ -154,6 +156,8 @@
     <ClCompile Include="..\..\..\libraries\espduino\ringbuf.c" />
     <ClCompile Include="..\..\..\libraries\MemoryFree\MemoryFree.cpp" />
     <ClCompile Include="LedHeper.cpp" />
+    <ClCompile Include="LedStatus.cpp" />
+    <ClCompile Include="LedStatusConverter.cpp" />
     <ClCompile Include="MqttHelper.cpp" />
     <ClCompile Include="SensitiveData.cpp" />
   </ItemGroup>

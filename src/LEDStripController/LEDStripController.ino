@@ -1,10 +1,13 @@
+#include "LedStatusConverter.h"
+#include "LedStatus.h"
 #include <Adafruit_NeoPixel.h>
 #include "LedHeper.h"
 #include "SensitiveData.h"
 #include <FP.h>
 #include "MqttHelper.h"
 #include <MemoryFree.h>
-
+#include "LedStatus.h"
+#include "LedStatusConverter.h"
 
 MqttHelperClass mqtt;
 LedHeperClass led(60, 5);
@@ -35,5 +38,6 @@ void statusRequested(const char * data) {
 }
 
 void setLights(const char * data) {
-	led.allWhite();
+	LedStatusClass st = LedStatusConverterClass::FromStr(data);
+	led.set(st);
 }
