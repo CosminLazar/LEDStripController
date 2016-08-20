@@ -44,7 +44,7 @@ void LedStatusConverterClass::ParseStr(const char * str, uint8_t * valueBuff, ui
 
 	if (indexer != 0 && parameterIndexer < len) {
 		//str did not finish in a ';'
-		buff[indexer + 1] = '\0';
+		buff[indexer] = '\0';
 		valueBuff[parameterIndexer] = atoi(buff);
 	}
 }
