@@ -61,18 +61,16 @@ void setLights2(const char * data) {
 	led2.set(st);
 }
 
-void statusLights1(const char * data) {
-	LedStatusClass emptyResponse(1, 2, 3, 4, 5);
+void statusLights1(const char * data) {	
 	char statusStr[32];
-	LedStatusConverterClass::ToStr(emptyResponse, statusStr);
+	LedStatusConverterClass::ToStr(led1.getState(), statusStr);
 
 	mqtt.publish("stl1r", statusStr);
 }
 
-void statusLights2(const char * data) {
-	LedStatusClass emptyResponse(5, 4, 3, 2, 1);
+void statusLights2(const char * data) {	
 	char statusStr[32];
-	LedStatusConverterClass::ToStr(emptyResponse, statusStr);
+	LedStatusConverterClass::ToStr(led2.getState(), statusStr);
 
 	mqtt.publish("stl2r", statusStr);
 }
