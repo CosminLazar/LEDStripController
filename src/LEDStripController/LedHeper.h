@@ -21,6 +21,10 @@ class LedHeperClass
 	void init();
 	void allWhite();
 	void set(LedStatusClass status);
+private:
+	///<summary>Maps brightness from [0,100] interval to [0,255]</summary>
+	///<param name="brightness">Brightness value in [0,100] range</param>	
+	uint8_t mapBrightness(uint8_t brightness);
 };
 
 extern LedHeperClass LedHeper;
