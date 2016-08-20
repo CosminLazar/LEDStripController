@@ -22,5 +22,5 @@ uint8_t LedStatusClass::get_B()
 
 uint8_t LedStatusClass::get_Brigthness()
 {
-	return _brigtness;
+	return _brightness;
 }

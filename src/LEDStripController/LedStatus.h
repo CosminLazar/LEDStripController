@@ -12,14 +12,20 @@
 class LedStatusClass
 {
 private:
-	uint8_t _isOn;
+	bool _isOn;
 	uint8_t _r;
 	uint8_t _g;
 	uint8_t _b;
-	uint8_t _brigtness;
+	uint8_t _brightness;
 public:
-	LedStatusClass(uint8_t isOn, uint8_t r, uint8_t g, uint8_t b, uint8_t brigtness) 
-		:_isOn(isOn), _r(r), _g(g), _b(b), _brigtness(brigtness) {};
+	///<summary>Holds the LED state</summary>
+	///<param name="isOn">Boolean indicating the power state</param>
+	///<param name="r">Color: Red component (range 0-255)</param>
+	///<param name="g">Color: Green component (range 0-255)</param>
+	///<param name="b">Color: Blue component (range 0-255)</param>
+	///<param name="brightness">Brightness (range 0-100)</param>
+	LedStatusClass(bool isOn, uint8_t r, uint8_t g, uint8_t b, uint8_t brightness) 
+		:_isOn(isOn), _r(r), _g(g), _b(b), _brightness(brightness) {};
 
 	bool isOn();
 	uint8_t get_R();
