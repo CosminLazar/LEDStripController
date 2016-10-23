@@ -1,0 +1,32 @@
+<ion-content>
+  <ion-refresher refreshingSpinner="ios" (ionRefresh)="refreshController($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+	<ion-slides #controllerSlider  [options]="{loop:false, pager:true}">
+		<ion-slide>
+			<ion-toolbar>
+				<ion-title>COSMIN2</ion-title>
+				<ion-buttons end>
+					<img class="avatar" src="assets/img/cosmin_50x50.jpg" />
+				</ion-buttons>
+			</ion-toolbar>
+
+			<ion-card>
+				<led-controller #firstController ></led-controller>
+			</ion-card>
+		</ion-slide>
+		<ion-slide>
+			<ion-toolbar>
+				<ion-title>ELLA</ion-title>
+				<ion-buttons end>
+					<img class="avatar" src="assets/img/ella_50x50.jpg" />
+				</ion-buttons>
+			</ion-toolbar>
+
+			<ion-card>
+				<led-controller #secondController></led-controller>
+			</ion-card>
+
+		</ion-slide>
+	</ion-slides>
+</ion-content>
