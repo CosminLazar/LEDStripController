@@ -7,19 +7,51 @@ import { Component, Input } from '@angular/core';
 export class LedController {
     @Input() title;
     @Input() avatarImage;
-    public R = 0;
-    public G = 0;
-    public B = 0;
 
-    public getCssColor(): string {
-        return 'rgb(' + this.R + ',' + this.G + ',' + this.B + ')';
+    private _R: number;
+    public get R(): number {
+        return this._R;
+    }
+    public set R(v: number) {
+        this._R = v;
+        this.updateRgbPreview();
+    }
+
+    private _G: number;
+    public get G(): number {
+        return this._G;
+    }
+    public set G(v: number) {
+        this._G = v;
+        this.updateRgbPreview();
+    }
+
+    private _B: number;
+    public get B(): number {
+        return this._B;
+    }
+    public set B(v: number) {
+        this._B = v;
+        this.updateRgbPreview();
+    }
+
+    public rgbPreview: string;
+
+    constructor() {
+        this.R = 0;
+        this.G = 0;
+        this.B = 0;
     }
 
     public refresh = () => {
         return new Promise((resolve, reject) => {
-            setTimeout(function() {
+            setTimeout(function () {
                 resolve();
             }, 2000);
         });
+    };
+
+    private updateRgbPreview = (): void => { 
+        this.rgbPreview = 'rgb(' + this.R + ',' + this.G + ',' + this.B + ')';
     };
 }
