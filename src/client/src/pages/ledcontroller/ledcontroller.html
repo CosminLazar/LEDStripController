@@ -1,67 +1,75 @@
-<ion-item-group>
-	<ion-list>
-		<ion-item>
-			<ion-label>POWER</ion-label>
-			<ion-toggle checked="false"></ion-toggle>
-		</ion-item>
-		<ion-item>
-			<ion-label>EFFECT</ion-label>
-			<ion-select interface="action-sheet">
-				<ion-option value="0" selected="true">No effect</ion-option>
-				<ion-option value="1">Fade</ion-option>
-			</ion-select>
-		</ion-item>
-	</ion-list>
-	<ion-item-divider></ion-item-divider>
+<ion-toolbar>
+	<ion-title>{{title}}</ion-title>
+	<ion-buttons end>
+		<img class="avatar" [src]="avatarImage" />
+	</ion-buttons>
+</ion-toolbar>
+<ion-card>
+	<ion-item-group>
+		<ion-list>
+			<ion-item>
+				<ion-label>POWER</ion-label>
+				<ion-toggle checked="false"></ion-toggle>
+			</ion-item>
+			<ion-item>
+				<ion-label>EFFECT</ion-label>
+				<ion-select interface="action-sheet">
+					<ion-option value="0" selected="true">No effect</ion-option>
+					<ion-option value="1">Fade</ion-option>
+				</ion-select>
+			</ion-item>
+		</ion-list>
+		<ion-item-divider></ion-item-divider>
 
-	<ion-list>
-		<ion-list-header>
-			<ion-label>
-				Brightness
-			</ion-label>
-		</ion-list-header>
+		<ion-list>
+			<ion-list-header>
+				<ion-label>
+					Brightness
+				</ion-label>
+			</ion-list-header>
 
-		<ion-range>
-			<ion-icon range-left small name="sunny"></ion-icon>
-			<ion-icon range-right name="sunny"></ion-icon>
-		</ion-range>
+			<ion-range>
+				<ion-icon range-left small name="sunny"></ion-icon>
+				<ion-icon range-right name="sunny"></ion-icon>
+			</ion-range>
 
-	</ion-list>
+		</ion-list>
 
-	<ion-item-divider light>
+		<ion-item-divider light>
 
-	</ion-item-divider>
-	<ion-list>
-		<ion-list-header>
-			<ion-label>Color</ion-label>
-			<ion-badge item-right [style.background-color]="getCssColor()">preview</ion-badge>
-		</ion-list-header>
-		<ion-item>
-			<ion-label>Red</ion-label>
-			<ion-badge color="danger" item-right>{{R}}</ion-badge>
-		</ion-item>
-		<ion-range [(ngModel)]="R" min="0" max="255" color="danger">
-			<ion-icon range-left small name="sunny"></ion-icon>
-			<ion-icon range-right name="sunny"></ion-icon>
-		</ion-range>
-		<ion-item>
-			<ion-label>Green</ion-label>
-			<ion-badge color="secondary" item-right>{{G}}</ion-badge>
-		</ion-item>
-		<ion-range [(ngModel)]="G" min="0" max="255" color="secondary">
-			<ion-icon range-left small name="sunny"></ion-icon>
-			<ion-icon range-right name="sunny"></ion-icon>
-		</ion-range>
-		<ion-item>
-			<ion-label>Blue</ion-label>
-			<ion-badge color="primary" item-right>{{B}}</ion-badge>
-		</ion-item>
-		<ion-range [(ngModel)]="B" min="0" max="255" color="primary">
-			<ion-icon range-left small name="sunny"></ion-icon>
-			<ion-icon range-right name="sunny"></ion-icon>
-		</ion-range>
-	</ion-list>
+		</ion-item-divider>
+		<ion-list>
+			<ion-list-header>
+				<ion-label>Color</ion-label>
+				<ion-badge item-right [style.background-color]="getCssColor()">preview</ion-badge>
+			</ion-list-header>
+			<ion-item>
+				<ion-label>Red</ion-label>
+				<ion-badge color="danger" item-right>{{R}}</ion-badge>
+			</ion-item>
+			<ion-range [(ngModel)]="R" min="0" max="255" color="danger">
+				<ion-icon range-left small name="sunny"></ion-icon>
+				<ion-icon range-right name="sunny"></ion-icon>
+			</ion-range>
+			<ion-item>
+				<ion-label>Green</ion-label>
+				<ion-badge color="secondary" item-right>{{G}}</ion-badge>
+			</ion-item>
+			<ion-range [(ngModel)]="G" min="0" max="255" color="secondary">
+				<ion-icon range-left small name="sunny"></ion-icon>
+				<ion-icon range-right name="sunny"></ion-icon>
+			</ion-range>
+			<ion-item>
+				<ion-label>Blue</ion-label>
+				<ion-badge color="primary" item-right>{{B}}</ion-badge>
+			</ion-item>
+			<ion-range [(ngModel)]="B" min="0" max="255" color="primary">
+				<ion-icon range-left small name="sunny"></ion-icon>
+				<ion-icon range-right name="sunny"></ion-icon>
+			</ion-range>
+		</ion-list>
 
 
 
-</ion-item-group>
+	</ion-item-group>
+</ion-card>

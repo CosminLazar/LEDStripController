@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
     selector: 'led-controller',
     templateUrl: 'ledcontroller.html'
 })
 export class LedController {
-    name = 'ella';
+    @Input() title;
+    @Input() avatarImage;
     public R = 0;
     public G = 0;
     public B = 0;
