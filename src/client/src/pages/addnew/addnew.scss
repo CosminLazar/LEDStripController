@@ -1,0 +1,15 @@
+.avatar-presenter-item{
+    align-items: flex-start !important;
+}
+ion-avatar{
+    display: inline;
+
+    img{
+        display: inline;
+        border: 2px solid map-get($colors, light);
+    }
+
+    .selected{
+        border-color: map-get($colors, primary);
+    }
+}

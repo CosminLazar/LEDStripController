@@ -1,13 +1,61 @@
+<ion-header>
+	<ion-navbar>
+		<ion-buttons start>
+			<button ion-button icon-only (click)="addNewUnit()">
+          		<ion-icon name="add"></ion-icon>
+        	</button>
+		</ion-buttons>
+		<ion-title>Main page</ion-title>
+		<ion-buttons end>
+			<button ion-button icon-only>
+          <ion-icon name="settings"></ion-icon>
+        </button>
+		</ion-buttons>
+	</ion-navbar>
+</ion-header>
+
 <ion-content>
-	<ion-refresher refreshingSpinner="ios" (ionRefresh)="refreshController($event)">
+	<ion-list>
+		<ion-item-sliding *ngFor="let unit of userSettings.controlUnits">
+			<button ion-item (click)="openPage(unit)" disabled>
+				<ion-avatar item-left>	
+					<img [src]="unit.image" >
+				</ion-avatar>
+				<h2>
+				{{unit.name}}
+				</h2>
+				<h3 item-right>not connected</h3>
+
+				<ion-icon name="bulb" item-right isActive="false"></ion-icon>
+				<ion-icon name="bulb" item-right ></ion-icon>						
+			</button>
+
+			<ion-item-options side="left">
+				<button ion-button color="light" color="danger">          
+					Delete
+        		</button>
+			</ion-item-options>
+
+			<ion-item-options side="right">
+				<button ion-button>          
+					Edit
+         		</button>
+			</ion-item-options>
+
+		</ion-item-sliding>
+
+	</ion-list>
+	<!--<ion-refresher refreshingSpinner="ios" (ionRefresh)="refreshController($event)">
 		<ion-refresher-content></ion-refresher-content>
 	</ion-refresher>
-	<ion-slides #controllerSlider [options]="{loop:false, pager:true}">
+
+	<add-new></add-new>-->
+	<!--<ion-slides #controllerSlider [options]="{loop:false, pager:true}">
 		<ion-slide>
 			<led-controller #firstController [title]="'COSMIN'" [avatarImage]="'assets/img/cosmin_50x50.jpg'"></led-controller>
 		</ion-slide>
 		<ion-slide>
 			<led-controller #secondController [title]="'ELLA'" [avatarImage]="'assets/img/ella_50x50.jpg'"></led-controller>
 		</ion-slide>
-	</ion-slides>
+	</ion-slides>-->
 </ion-content>

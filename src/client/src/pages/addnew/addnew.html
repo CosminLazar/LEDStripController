@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-navbar>
+    <ion-buttons start>
+      <button ion-button (click)="cancel()">Cancel</button>
+    </ion-buttons>
+    <ion-title>Add new control unit</ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="save()" strong="true" [disabled]="!form.valid">Save</button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="form">
+    <ion-list>
+      <ion-item>
+        <ion-label stacked primary>Name</ion-label>
+        <ion-input type="text" formControlName="name"></ion-input>
+      </ion-item>
+
+      <ion-item class="avatar-presenter-item">
+        <ion-label stacked>Avatar</ion-label>
+        <span item-content>
+        <ion-avatar *ngFor="let item of avatars">
+          <img [src]="item" 
+              [class.selected]="isAvatarSelected(item)" 
+              (click)="selectAvatar(item)">
+        </ion-avatar>
+    </span>
+      </ion-item>
+
+      <ion-item>
+        <ion-label stacked>Read topic</ion-label>
+        <ion-input type="text" placeholder="stl1" formControlName="readTopic"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label stacked>Write topic</ion-label>
+        <ion-input type="text" placeholder="sl1" formControlName="writeTopic"></ion-input>
+      </ion-item>
+    </ion-list>
+  </form>
+</ion-content>

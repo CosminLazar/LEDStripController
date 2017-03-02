@@ -1,4 +1,8 @@
 import { Component, Input } from '@angular/core';
+import { NavParams } from 'ionic-angular';
+import { LedCommunicationService } from '../../services/ledcommunicationservice';
+import { ControlUnit } from '../../services/usersettings';
+import RX from 'rxjs/RX';
 
 @Component({
     selector: 'led-controller',
@@ -36,11 +40,22 @@ export class LedController {
     }
 
     public rgbPreview: string;
+    private _statusUpdatesSubscription: RX.Subscription;
 
-    constructor() {
+    constructor(public commService: LedCommunicationService, navParams: NavParams) {
         this.R = 0;
         this.G = 0;
         this.B = 0;
+
+        let settings = <ControlUnit>navParams.data;
+        this.title = settings.name;
+        this.avatarImage = settings.image;
+
+        this.commService.subscribeToControlUnit(settings);
+
+        this._statusUpdatesSubscription = this.commService.statusUpdates.subscribe(st => {
+            console.log(this.title + " received: " + st);
+        });
     }
 
     public refresh = () => {
@@ -51,7 +66,11 @@ export class LedController {
         });
     };
 
-    private updateRgbPreview = (): void => { 
+    private updateRgbPreview = (): void => {
         this.rgbPreview = 'rgb(' + this.R + ',' + this.G + ',' + this.B + ')';
+    };
+
+    public ionViewWillUnload = () => {
+        this._statusUpdatesSubscription.unsubscribe();
     };
 }

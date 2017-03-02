@@ -1,30 +1,39 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavController, Slides, Refresher } from 'ionic-angular';
+import { NavController, Slides, Refresher, ModalController } from 'ionic-angular';
 import { LedController } from '../ledcontroller/ledcontroller';
+import { AddNew } from '../addnew/addnew'
+import { UserSettings, ControlUnit } from '../../services/usersettings';
 
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
 })
-export class HomePage {
-  @ViewChild('firstController') firstController: LedController;
-  @ViewChild('secondController') secondController: LedController;
-
-  @ViewChild('controllerSlider') slider: Slides;
-
-  constructor(public navCtrl: NavController) {
-
+export class HomePage {  
+  constructor(public navCtrl: NavController, private modalCtrl: ModalController, public userSettings: UserSettings) {
+    this.reload();
   }
 
-  public refreshController = (refresher: Refresher) => {
-    this.getActiveController().refresh().then(() => {
-      refresher.complete();
-    });
+  private reload = () => {
+    //if no settings, show add new
+    //if loaded from settings, navigate to the default one
   };
 
-  private getActiveController = () => {
-    if (this.slider.getActiveIndex() == 0)
-      return this.firstController;
-    return this.secondController;
+  public openPage = (page: any) => {
+    this.navCtrl.push(page.component, page.prm);
+  };
+
+  public addNewUnit = () => {
+    var modal = this.modalCtrl.create(AddNew);
+    modal.onDidDismiss((result) => {
+      if (result)
+        this.newUnitAdded(result);
+    });
+
+    modal.present();
+  };
+
+  private newUnitAdded = (unit: ControlUnit) => {
+    this.userSettings.controlUnits.push(unit);
+    this.reload();
   };
 }
