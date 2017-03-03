@@ -17,7 +17,7 @@
 <ion-content>
 	<ion-list>
 		<ion-item-sliding #unitSlidingItem *ngFor="let unit of userSettings.controlUnits">
-			<button ion-item (click)="openPage(unit)" >
+			<button ion-item (click)="openUnit(unit)" >
 				<ion-avatar item-left>	
 					<img [src]="unit.image" >
 				</ion-avatar>

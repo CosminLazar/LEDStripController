@@ -18,8 +18,8 @@ export class HomePage {
     //if loaded from settings, navigate to the default one
   };
 
-  public openPage = (page: any) => {
-    this.navCtrl.push(page.component, page.prm);
+  public openUnit = (unit: ControlUnit) => {
+    this.navCtrl.push(LedController, unit);
   };
 
   public addNewUnit = () => {
