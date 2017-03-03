@@ -49,6 +49,13 @@ export class HomePage {
 
   };
 
+  public deleteUnit = (unit: ControlUnit) => {
+    let index = this.userSettings.controlUnits.indexOf(unit);
+    if (index >= 0) {
+      this.userSettings.controlUnits.splice(index, 1);
+    }
+  };
+
   private newUnitAdded = (unit: ControlUnit) => {
     this.userSettings.controlUnits.push(unit);
     this.reload();
