@@ -16,8 +16,8 @@
 
 <ion-content>
 	<ion-list>
-		<ion-item-sliding *ngFor="let unit of userSettings.controlUnits">
-			<button ion-item (click)="openPage(unit)" disabled>
+		<ion-item-sliding #unitSlidingItem *ngFor="let unit of userSettings.controlUnits">
+			<button ion-item (click)="openPage(unit)" >
 				<ion-avatar item-left>	
 					<img [src]="unit.image" >
 				</ion-avatar>
@@ -37,7 +37,7 @@
 			</ion-item-options>
 
 			<ion-item-options side="right">
-				<button ion-button>          
+				<button ion-button (click)="editUnit(unit, unitSlidingItem)">          
 					Edit
          		</button>
 			</ion-item-options>

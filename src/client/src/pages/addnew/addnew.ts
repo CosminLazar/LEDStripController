@@ -17,11 +17,13 @@ export class AddNew {
       'assets/img/cosmin_50x50.jpg'
     ];
 
+    let initialValue = <ControlUnit> (viewCtrl.data || new ControlUnit());
+
     this.form = this.formBuilder.group({
-      name: ['', Validators.required],
-      readTopic: ['', Validators.required],
-      writeTopic: ['', Validators.required],
-      avatar: [this.avatars[0], Validators.required]
+      name: [initialValue.name, Validators.required],
+      readTopic: [initialValue.readTopic, Validators.required],
+      writeTopic: [initialValue.writeTopic, Validators.required],
+      avatar: [ initialValue.image || this.avatars[0], Validators.required]
     });
   }
 
@@ -41,7 +43,7 @@ export class AddNew {
     if (!this.form.valid)
       throw 'cannot save invalid form';
 
-    var formResult = this.form.value;
+    let formResult = this.form.value;
     let result = new ControlUnit();
 
     result.name = formResult.name;
