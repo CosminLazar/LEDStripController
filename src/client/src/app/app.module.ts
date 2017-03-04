@@ -6,13 +6,15 @@ import { LedController } from '../pages/ledcontroller/ledcontroller';
 import { AddNew } from '../pages/addnew/addnew';
 import { UserSettings } from '../services/usersettings';
 import { LedCommunicationService } from '../services/ledcommunicationservice';
+import { ServerSettingsPage } from '../pages/serversettings/serversettings';
 
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
     LedController,
-    AddNew
+    AddNew,
+    ServerSettingsPage
   ],
   imports: [
     IonicModule.forRoot(MyApp)
@@ -21,7 +23,8 @@ import { LedCommunicationService } from '../services/ledcommunicationservice';
   entryComponents: [    
     HomePage,
     LedController,
-    AddNew
+    AddNew,
+    ServerSettingsPage
   ],
   providers: [UserSettings, LedCommunicationService]
 })

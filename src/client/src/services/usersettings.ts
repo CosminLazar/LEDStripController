@@ -12,22 +12,20 @@ export class UserSettings {
 
         cosmin.name = 'Cosmin';
         cosmin.image = 'assets/img/cosmin_50x50.jpg';
-        cosmin.readTopic ='stl1';
-        cosmin.writeTopic='sl1';
+        cosmin.readTopic = 'stl1';
+        cosmin.writeTopic = 'sl1';
         ella.name = 'Ella';
         ella.image = 'assets/img/ella_50x50.jpg';
-        ella.readTopic ='stl2';
-        ella.writeTopic='sl2';
+        ella.readTopic = 'stl2';
+        ella.writeTopic = 'sl2';
 
         this.controlUnits.push(cosmin);
         this.controlUnits.push(ella);
-
-        this.server = new MqttServer();
-        this.server.host='';
-        this.server.port= 8883;
-        this.server.user='';
-        this.server.password='';
     }
+
+    public updateServer = (serverInfo: MqttServer) => {
+        this.server = serverInfo;
+    };
 }
 
 export class MqttServer {

@@ -1,0 +1,44 @@
+<!--
+  Generated template for the Serversettings page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-buttons start>
+      <button ion-button (click)="cancel()">Cancel</button>
+    </ion-buttons>
+    <ion-title>Server settings</ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="save()" strong="true" [disabled]="!form.valid">Save</button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+  <form [formGroup]="form">
+       <ion-item>
+        <ion-label stacked primary>Host</ion-label>
+        <ion-input type="text" formControlName="host"></ion-input>
+      </ion-item>
+
+       <ion-item>
+        <ion-label stacked primary>Port</ion-label>
+        <ion-input type="number" formControlName="port"></ion-input>
+      </ion-item>
+
+       <ion-item>
+        <ion-label stacked primary>User</ion-label>
+        <ion-input type="text" formControlName="user"></ion-input>
+      </ion-item>
+
+       <ion-item>
+        <ion-label stacked primary>Password</ion-label>
+        <ion-input type="text" formControlName="password"></ion-input>
+      </ion-item>
+  </form>
+</ion-content>

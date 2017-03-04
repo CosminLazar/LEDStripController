@@ -1,8 +1,9 @@
 import { Component, ViewChild } from '@angular/core';
 import { NavController, Slides, Refresher, ModalController, ItemSliding } from 'ionic-angular';
 import { LedController } from '../ledcontroller/ledcontroller';
-import { AddNew } from '../addnew/addnew'
-import { UserSettings, ControlUnit } from '../../services/usersettings';
+import { AddNew } from '../addnew/addnew';
+import { UserSettings, ControlUnit, MqttServer } from '../../services/usersettings';
+import { ServerSettingsPage } from '../serversettings/serversettings';
 
 @Component({
   selector: 'page-home',
@@ -16,6 +17,16 @@ export class HomePage {
   private reload = () => {
     //if no settings, show add new
     //if loaded from settings, navigate to the default one
+  };
+
+  public editServerSettings = () => {
+    let modal = this.modalCtrl.create(ServerSettingsPage, this.userSettings.server);
+    modal.onDidDismiss((result: MqttServer) => {
+      if(result){
+          this.userSettings.updateServer(result);
+      }
+    });
+    modal.present();
   };
 
   public openUnit = (unit: ControlUnit) => {
