@@ -1,7 +1,7 @@
 import { NavController, Slides, Refresher, ViewController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
-import { ControlUnit } from '../../services/usersettings';
+import { IControlUnit } from '../../services/usersettings';
 
 @Component({
   selector: 'add-new',
@@ -17,13 +17,13 @@ export class AddNew {
       'assets/img/cosmin_50x50.jpg'
     ];
 
-    let initialValue = <ControlUnit> (viewCtrl.data || new ControlUnit());
+    let initialValue = <IControlUnit>(viewCtrl.data || {});
 
     this.form = this.formBuilder.group({
       name: [initialValue.name, Validators.required],
       readTopic: [initialValue.readTopic, Validators.required],
       writeTopic: [initialValue.writeTopic, Validators.required],
-      avatar: [ initialValue.image || this.avatars[0], Validators.required]
+      avatar: [initialValue.image || this.avatars[0], Validators.required]
     });
   }
 
@@ -44,12 +44,12 @@ export class AddNew {
       throw 'cannot save invalid form';
 
     let formResult = this.form.value;
-    let result = new ControlUnit();
-
-    result.name = formResult.name;
-    result.image = formResult.avatar;
-    result.readTopic = formResult.readTopic;
-    result.writeTopic = formResult.writeTopic;
+    let result: IControlUnit = {
+      name: formResult.name,
+      image: formResult.avatar,
+      readTopic: formResult.readTopic,
+      writeTopic: formResult.writeTopic
+    };
 
     this.viewCtrl.dismiss(result);
   };

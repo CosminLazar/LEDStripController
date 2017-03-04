@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { NavParams } from 'ionic-angular';
 import { LedCommunicationService } from '../../services/ledcommunicationservice';
-import { ControlUnit } from '../../services/usersettings';
+import { IControlUnit } from '../../services/usersettings';
 import RX from 'rxjs/RX';
 
 @Component({
@@ -47,7 +47,7 @@ export class LedController {
         this.G = 0;
         this.B = 0;
 
-        let settings = <ControlUnit>navParams.data;
+        let settings = <IControlUnit>navParams.data;
         this.title = settings.name;
         this.avatarImage = settings.image;
 

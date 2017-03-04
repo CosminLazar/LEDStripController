@@ -2,9 +2,6 @@ import { Component, ViewChild } from '@angular/core';
 import { StatusBar } from 'ionic-native';
 import { Platform, MenuController, Nav } from 'ionic-angular';
 import { HomePage } from '../pages/home/home';
-import { AddNew } from '../pages/addnew/addnew'
-import { LedController } from '../pages/ledcontroller/ledcontroller';
-import { UserSettings, ControlUnit } from '../services/usersettings';
 
 @Component({
   templateUrl: 'app.html'

@@ -7,6 +7,7 @@ import { AddNew } from '../pages/addnew/addnew';
 import { UserSettings } from '../services/usersettings';
 import { LedCommunicationService } from '../services/ledcommunicationservice';
 import { ServerSettingsPage } from '../pages/serversettings/serversettings';
+import { Storage } from '@ionic/storage';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,6 @@ import { ServerSettingsPage } from '../pages/serversettings/serversettings';
     AddNew,
     ServerSettingsPage
   ],
-  providers: [UserSettings, LedCommunicationService]
+  providers: [UserSettings, LedCommunicationService, Storage]
 })
 export class AppModule {}

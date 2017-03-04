@@ -2,7 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { NavController, Slides, Refresher, ModalController, ItemSliding } from 'ionic-angular';
 import { LedController } from '../ledcontroller/ledcontroller';
 import { AddNew } from '../addnew/addnew';
-import { UserSettings, ControlUnit, MqttServer } from '../../services/usersettings';
+import { UserSettings, IControlUnit, IMqttServer } from '../../services/usersettings';
 import { ServerSettingsPage } from '../serversettings/serversettings';
 
 @Component({
@@ -19,7 +19,7 @@ export class HomePage {
 
   public editServerSettings = () => {
     let modal = this.modalCtrl.create(ServerSettingsPage, this.userSettings.server);
-    modal.onDidDismiss((result: MqttServer) => {
+    modal.onDidDismiss((result: IMqttServer) => {
       if (result) {
         this.userSettings.updateServer(result);
       }
@@ -27,7 +27,7 @@ export class HomePage {
     modal.present();
   };
 
-  public openUnit = (unit: ControlUnit) => {
+  public openUnit = (unit: IControlUnit) => {
     this.navCtrl.push(LedController, unit);
   };
 
@@ -41,9 +41,9 @@ export class HomePage {
     modal.present();
   };
 
-  public editUnit = (unit: ControlUnit, unitSlidingItem: ItemSliding) => {
+  public editUnit = (unit: IControlUnit, unitSlidingItem: ItemSliding) => {
     var modal = this.modalCtrl.create(AddNew, unit);
-    modal.onDidDismiss((result: ControlUnit) => {
+    modal.onDidDismiss((result: IControlUnit) => {
       unitSlidingItem.close();
       if (result) {
         this.userSettings.updateUnit(unit, result);
@@ -53,7 +53,7 @@ export class HomePage {
     modal.present();
   };
 
-  public deleteUnit = (unit: ControlUnit) => {
+  public deleteUnit = (unit: IControlUnit) => {
     this.userSettings.deleteUnit(unit);
   };
 }

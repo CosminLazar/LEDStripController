@@ -1,62 +1,101 @@
 import { Injectable } from '@angular/core';
+import { Storage } from '@ionic/storage';
 
 @Injectable()
 export class UserSettings {
-    public controlUnits: Array<ControlUnit>;
-    public server: MqttServer;
+    public controlUnits: Array<IControlUnit>;
+    public server: IMqttServer;
+    private _storage: Storage;
 
-    constructor() {
-        this.controlUnits = new Array<ControlUnit>();
-        var cosmin = new ControlUnit();
-        var ella = new ControlUnit();
+    constructor(storage: Storage) {
+        this._storage = storage;
+        this.controlUnits = new Array<IControlUnit>();
+        /*
+        var cosmin = new IControlUnit();
+        var ella = new IControlUnit();
 
-        cosmin.name = 'Cosmin';
-        cosmin.image = 'assets/img/cosmin_50x50.jpg';
-        cosmin.readTopic = 'stl1';
-        cosmin.writeTopic = 'sl1';
-        ella.name = 'Ella';
-        ella.image = 'assets/img/ella_50x50.jpg';
-        ella.readTopic = 'stl2';
-        ella.writeTopic = 'sl2';
-
-        this.controlUnits.push(cosmin);
-        this.controlUnits.push(ella);
+        
+                cosmin.name = 'Cosmin';
+                cosmin.image = 'assets/img/cosmin_50x50.jpg';
+                cosmin.readTopic = 'stl1';
+                cosmin.writeTopic = 'sl1';
+                ella.name = 'Ella';
+                ella.image = 'assets/img/ella_50x50.jpg';
+                ella.readTopic = 'stl2';
+                ella.writeTopic = 'sl2';
+        
+                this.controlUnits.push(cosmin);
+                this.controlUnits.push(ella);
+        */
+        this._storage.ready().then(this.loadFromStorage);
     }
 
-    public updateServer = (serverInfo: MqttServer) => {
+    private loadFromStorage = () => {
+        this._storage.get('settings').then((settings) => {
+            if (!settings)
+                return;
+
+            if (settings.server) {
+                this.server = settings.server;
+            }
+
+            if (settings.units && settings.units instanceof Array) {
+                settings.units.forEach(x => this.controlUnits.push(x));
+            }
+
+        });
+    };
+
+    private saveToStorage = () => {
+        this._storage.set(
+            'settings',
+            {
+                units: this.controlUnits,
+                server: this.server
+            });
+    };
+
+    public updateServer = (serverInfo: IMqttServer) => {
         this.server = serverInfo;
+
+        this.saveToStorage();
     };
 
-    public addUnit = (unit: ControlUnit) => {
+    public addUnit = (unit: IControlUnit) => {
         this.controlUnits.push(unit);
+
+        this.saveToStorage();
     };
 
-    public deleteUnit = (unit: ControlUnit) => {
+    public deleteUnit = (unit: IControlUnit) => {
         let index = this.controlUnits.indexOf(unit);
         if (index >= 0) {
             this.controlUnits.splice(index, 1);
         }
+
+        this.saveToStorage();
     };
 
-    public updateUnit = (oldUnit: ControlUnit, newUnit: ControlUnit) => {
+    public updateUnit = (oldUnit: IControlUnit, newUnit: IControlUnit) => {
         oldUnit.name = newUnit.name;
         oldUnit.image = newUnit.image;
         oldUnit.readTopic = newUnit.readTopic;
         oldUnit.writeTopic = newUnit.writeTopic;
+
+        this.saveToStorage();
     };
 }
 
-export class MqttServer {
-    public host: string;
-    public port: number;
-    public user: string;
-    public password: string;
+export interface IMqttServer {
+    host: string;
+    port: number;
+    user: string;
+    password: string;
 }
 
-export class ControlUnit {
-    public name: string;
-    public image: string;
-    public readTopic: string;
-    public writeTopic: string;
-    //other topics, e.g.: results
+export class IControlUnit {
+    name: string;
+    image: string;
+    readTopic: string;
+    writeTopic: string;
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import RX from 'rxjs/RX';
 import { Paho } from 'ng2-mqtt/mqttws31';
-import { UserSettings, MqttServer, ControlUnit } from './usersettings';
+import { UserSettings, IMqttServer, IControlUnit } from './usersettings';
 
 @Injectable()
 export class LedCommunicationService {
@@ -9,7 +9,7 @@ export class LedCommunicationService {
     private _statusUpdatesProducer = null;
     public statusUpdates: RX.Observable<string>;
     private _client: Paho.MQTT.Client;
-    private _serverSettings: MqttServer;
+    private _serverSettings: IMqttServer;
     private _topicSubscriptionList = new Array<string>();
 
     constructor(settings: UserSettings) {
@@ -51,7 +51,7 @@ export class LedCommunicationService {
         }, 1000);
     }
 
-    public subscribeToControlUnit = (unit: ControlUnit) => {
+    public subscribeToControlUnit = (unit: IControlUnit) => {
         this.subscribe(unit.readTopic);
         this.subscribe(unit.writeTopic);
     };

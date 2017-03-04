@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, ViewController } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
-import { MqttServer } from '../../services/usersettings';
+import { IMqttServer } from '../../services/usersettings';
 
 @Component({
   selector: 'page-serversettings',
@@ -16,7 +16,7 @@ export class ServerSettingsPage {
     private formBuilder: FormBuilder,
     private viewCtrl: ViewController) {
 
-    let initialValue = <MqttServer>(navParams.data || new MqttServer());
+    let initialValue = <IMqttServer>(navParams.data || {});
 
     this.form = this.formBuilder.group({
       host: [initialValue.host, Validators.required],
@@ -34,13 +34,13 @@ export class ServerSettingsPage {
     if (!this.form.valid)
       throw 'cannot save invalid form';
 
-    let formResult = <MqttServer>this.form.value;
-    let result = new MqttServer();
-
-    result.host = formResult.host;
-    result.port = formResult.port;
-    result.user = formResult.user;
-    result.password = formResult.password;
+    let formResult = <IMqttServer>this.form.value;
+    let result: IMqttServer = {
+      host: formResult.host,
+      port: formResult.port,
+      user: formResult.user,
+      password: formResult.password
+    };
 
     this.viewCtrl.dismiss(result);
   };
