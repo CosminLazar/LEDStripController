@@ -21,8 +21,9 @@ export class AddNew {
 
     this.form = this.formBuilder.group({
       name: [initialValue.name, Validators.required],
-      readTopic: [initialValue.readTopic, Validators.required],
-      writeTopic: [initialValue.writeTopic, Validators.required],
+      getStateRequestTopic: [initialValue.getStateRequestTopic, Validators.required],
+      getStateResponseTopic: [initialValue.getStateResponseTopic, Validators.required],
+      setStateTopic: [initialValue.setStateTopic, Validators.required],
       avatar: [initialValue.image || this.avatars[0], Validators.required]
     });
   }
@@ -47,8 +48,9 @@ export class AddNew {
     let result: IControlUnit = {
       name: formResult.name,
       image: formResult.avatar,
-      readTopic: formResult.readTopic,
-      writeTopic: formResult.writeTopic
+      getStateRequestTopic: formResult.getStateRequestTopic,
+      getStateResponseTopic: formResult.getStateResponseTopic,
+      setStateTopic: formResult.setStateTopic
     };
 
     this.viewCtrl.dismiss(result);

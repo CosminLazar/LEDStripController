@@ -52,12 +52,12 @@ export class LedCommunicationService {
     }
 
     public subscribeToControlUnit = (unit: IControlUnit) => {
-        this.subscribe(unit.readTopic);
+        this.subscribe(unit.getStateResponseTopic);
         //this.subscribe(unit.writeTopic);
     };
 
     public unsubscribeFromControlUnit = (unit: IControlUnit) => {
-        this.unsubscribe(unit.readTopic);
+        this.unsubscribe(unit.getStateResponseTopic);
     };
 
     private unsubscribe = (topic: string) => {

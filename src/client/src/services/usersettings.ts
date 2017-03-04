@@ -10,31 +10,18 @@ export class UserSettings {
     constructor(storage: Storage) {
         this._storage = storage;
         this.controlUnits = new Array<IControlUnit>();
-        /*
-        var cosmin = new IControlUnit();
-        var ella = new IControlUnit();
 
-        
-                cosmin.name = 'Cosmin';
-                cosmin.image = 'assets/img/cosmin_50x50.jpg';
-                cosmin.readTopic = 'stl1';
-                cosmin.writeTopic = 'sl1';
-                ella.name = 'Ella';
-                ella.image = 'assets/img/ella_50x50.jpg';
-                ella.readTopic = 'stl2';
-                ella.writeTopic = 'sl2';
-        
-                this.controlUnits.push(cosmin);
-                this.controlUnits.push(ella);
-        */
+        //this._storage.clear();
         this._storage.ready().then(this.loadFromStorage);
     }
 
     private loadFromStorage = () => {
         this._storage.get('settings').then((settings) => {
-            if (!settings)
+            if (!settings) {
+                this.setDefaultSettings();
                 return;
-
+            }
+            
             if (settings.server) {
                 this.server = settings.server;
             }
@@ -42,8 +29,27 @@ export class UserSettings {
             if (settings.units && settings.units instanceof Array) {
                 settings.units.forEach(x => this.controlUnits.push(x));
             }
-
         });
+    };
+
+    private setDefaultSettings = () => {
+        var cosmin = new IControlUnit();
+        var ella = new IControlUnit();
+
+        cosmin.name = 'Cosmin';
+        cosmin.image = 'assets/img/cosmin_50x50.jpg';
+        cosmin.getStateRequestTopic = 'stl1';
+        cosmin.getStateResponseTopic = 'stlr1';
+        cosmin.setStateTopic = 'sl1';
+
+        ella.name = 'Ella';
+        ella.image = 'assets/img/ella_50x50.jpg';
+        ella.getStateRequestTopic = 'stl2';
+        ella.getStateResponseTopic = 'stlr2';
+        ella.setStateTopic = 'sl2';
+
+        this.controlUnits.push(cosmin);
+        this.controlUnits.push(ella);
     };
 
     private saveToStorage = () => {
@@ -79,8 +85,9 @@ export class UserSettings {
     public updateUnit = (oldUnit: IControlUnit, newUnit: IControlUnit) => {
         oldUnit.name = newUnit.name;
         oldUnit.image = newUnit.image;
-        oldUnit.readTopic = newUnit.readTopic;
-        oldUnit.writeTopic = newUnit.writeTopic;
+        oldUnit.setStateTopic = newUnit.setStateTopic;
+        oldUnit.getStateRequestTopic = newUnit.getStateRequestTopic;
+        oldUnit.getStateResponseTopic = newUnit.getStateResponseTopic;
 
         this.saveToStorage();
     };
@@ -96,6 +103,7 @@ export interface IMqttServer {
 export class IControlUnit {
     name: string;
     image: string;
-    readTopic: string;
-    writeTopic: string;
+    getStateRequestTopic: string;
+    getStateResponseTopic: string;
+    setStateTopic: string;
 }
