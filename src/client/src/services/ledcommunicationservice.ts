@@ -53,7 +53,24 @@ export class LedCommunicationService {
 
     public subscribeToControlUnit = (unit: IControlUnit) => {
         this.subscribe(unit.readTopic);
-        this.subscribe(unit.writeTopic);
+        //this.subscribe(unit.writeTopic);
+    };
+
+    public unsubscribeFromControlUnit = (unit: IControlUnit) => {
+        this.unsubscribe(unit.readTopic);
+    };
+
+    private unsubscribe = (topic: string) => {
+        var index = this._topicSubscriptionList.indexOf(topic);
+
+        if (index < 0)
+            return;
+
+        this._topicSubscriptionList.splice(index, 1);
+
+        if (this._client.isConnected()) {
+            this.hardUnsubscribe(topic);
+        }
     };
 
     private subscribe = (topic: string) => {
@@ -75,5 +92,13 @@ export class LedCommunicationService {
         }
 
         this._client.subscribe(topic, {});
+    };
+
+    private hardUnsubscribe = (topic: string) => {
+        if (!this._client.isConnected()) {
+            throw 'not connected';
+        }
+
+        this._client.unsubscribe(topic, {});
     };
 }
