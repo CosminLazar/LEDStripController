@@ -4,6 +4,7 @@ import { LedController } from '../ledcontroller/ledcontroller';
 import { AddNew } from '../addnew/addnew';
 import { UserSettings, IControlUnit, IMqttServer } from '../../services/usersettings';
 import { ServerSettingsPage } from '../serversettings/serversettings';
+import { LedCommunicationService } from '../../services/ledcommunicationservice';
 
 @Component({
   selector: 'page-home',
@@ -11,17 +12,46 @@ import { ServerSettingsPage } from '../serversettings/serversettings';
 })
 export class HomePage {
   constructor(
-    public navCtrl: NavController, 
-    private modalCtrl: ModalController, 
-    public userSettings: UserSettings) {
-    
+    public navCtrl: NavController,
+    private modalCtrl: ModalController,
+    public userSettings: UserSettings,
+    private communicationService: LedCommunicationService) {
   }
+
+  private ionViewDidLoad = () => {
+    this.userSettings.doneLoading().then(() => {
+      if (this.userSettings.server) {
+        this.connect(this.userSettings.server);
+      }
+    });
+  };
+
+  private connect = (server: IMqttServer): Promise<any> => {
+    return this.communicationService.connect(this.userSettings.server, this.onLostConnection)
+      .then(
+      () => {
+        console.log('connected');
+        //subscribe
+        this.userSettings.controlUnits.forEach(x => this.communicationService.subscribeToControlUnit(x));
+        //request status for each
+      },
+      () => { console.log('could not connect'); });
+  };
+
+  private onLostConnection = (gracefull: boolean) => {
+    if (gracefull)
+      console.log('terminated connection');
+    else
+      console.log('lost connection, do something');
+  };
 
   public editServerSettings = () => {
     let modal = this.modalCtrl.create(ServerSettingsPage, this.userSettings.server);
     modal.onDidDismiss((result: IMqttServer) => {
       if (result) {
+        this.communicationService.disconnect();
         this.userSettings.updateServer(result);
+        this.connect(this.userSettings.server);
       }
     });
     modal.present();
@@ -34,8 +64,10 @@ export class HomePage {
   public addNewUnit = () => {
     var modal = this.modalCtrl.create(AddNew);
     modal.onDidDismiss((result) => {
-      if (result)
+      if (result) {
         this.userSettings.addUnit(result);
+        this.communicationService.subscribeToControlUnit(result);
+      }
     });
 
     modal.present();
@@ -46,7 +78,9 @@ export class HomePage {
     modal.onDidDismiss((result: IControlUnit) => {
       unitSlidingItem.close();
       if (result) {
+        this.communicationService.unsubscribeFromControlUnit(unit);
         this.userSettings.updateUnit(unit, result);
+        this.communicationService.subscribeToControlUnit(result);
       }
     });
 
@@ -54,6 +88,7 @@ export class HomePage {
   };
 
   public deleteUnit = (unit: IControlUnit) => {
+    this.communicationService.unsubscribeFromControlUnit(unit);
     this.userSettings.deleteUnit(unit);
   };
 }

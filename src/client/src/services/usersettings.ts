@@ -6,22 +6,27 @@ export class UserSettings {
     public controlUnits: Array<IControlUnit>;
     public server: IMqttServer;
     private _storage: Storage;
+    private _loadPromise: Promise<any>;
 
     constructor(storage: Storage) {
         this._storage = storage;
         this.controlUnits = new Array<IControlUnit>();
 
         //this._storage.clear();
-        this._storage.ready().then(this.loadFromStorage);
+        this._loadPromise = this._storage.ready().then(this.loadFromStorage);
     }
 
-    private loadFromStorage = () => {
-        this._storage.get('settings').then((settings) => {
+    public doneLoading = (): Promise<any> => {
+        return this._loadPromise;
+    };
+
+    private loadFromStorage = (): Promise<any> => {
+        return this._storage.get('settings').then((settings) => {
             if (!settings) {
                 this.setDefaultSettings();
                 return;
             }
-            
+
             if (settings.server) {
                 this.server = settings.server;
             }
