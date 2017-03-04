@@ -26,6 +26,24 @@ export class UserSettings {
     public updateServer = (serverInfo: MqttServer) => {
         this.server = serverInfo;
     };
+
+    public addUnit = (unit: ControlUnit) => {
+        this.controlUnits.push(unit);
+    };
+
+    public deleteUnit = (unit: ControlUnit) => {
+        let index = this.controlUnits.indexOf(unit);
+        if (index >= 0) {
+            this.controlUnits.splice(index, 1);
+        }
+    };
+
+    public updateUnit = (oldUnit: ControlUnit, newUnit: ControlUnit) => {
+        oldUnit.name = newUnit.name;
+        oldUnit.image = newUnit.image;
+        oldUnit.readTopic = newUnit.readTopic;
+        oldUnit.writeTopic = newUnit.writeTopic;
+    };
 }
 
 export class MqttServer {

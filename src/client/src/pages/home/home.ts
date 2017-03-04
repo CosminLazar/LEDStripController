@@ -10,20 +10,18 @@ import { ServerSettingsPage } from '../serversettings/serversettings';
   templateUrl: 'home.html'
 })
 export class HomePage {
-  constructor(public navCtrl: NavController, private modalCtrl: ModalController, public userSettings: UserSettings) {
-    this.reload();
+  constructor(
+    public navCtrl: NavController, 
+    private modalCtrl: ModalController, 
+    public userSettings: UserSettings) {
+    
   }
-
-  private reload = () => {
-    //if no settings, show add new
-    //if loaded from settings, navigate to the default one
-  };
 
   public editServerSettings = () => {
     let modal = this.modalCtrl.create(ServerSettingsPage, this.userSettings.server);
     modal.onDidDismiss((result: MqttServer) => {
-      if(result){
-          this.userSettings.updateServer(result);
+      if (result) {
+        this.userSettings.updateServer(result);
       }
     });
     modal.present();
@@ -37,7 +35,7 @@ export class HomePage {
     var modal = this.modalCtrl.create(AddNew);
     modal.onDidDismiss((result) => {
       if (result)
-        this.newUnitAdded(result);
+        this.userSettings.addUnit(result);
     });
 
     modal.present();
@@ -47,28 +45,15 @@ export class HomePage {
     var modal = this.modalCtrl.create(AddNew, unit);
     modal.onDidDismiss((result: ControlUnit) => {
       unitSlidingItem.close();
-
       if (result) {
-        unit.name = result.name;
-        unit.image = result.image;
-        unit.readTopic = result.readTopic;
-        unit.writeTopic = result.writeTopic;
+        this.userSettings.updateUnit(unit, result);
       }
     });
 
     modal.present();
-
   };
 
   public deleteUnit = (unit: ControlUnit) => {
-    let index = this.userSettings.controlUnits.indexOf(unit);
-    if (index >= 0) {
-      this.userSettings.controlUnits.splice(index, 1);
-    }
-  };
-
-  private newUnitAdded = (unit: ControlUnit) => {
-    this.userSettings.controlUnits.push(unit);
-    this.reload();
+    this.userSettings.deleteUnit(unit);
   };
 }
