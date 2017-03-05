@@ -67,7 +67,7 @@ export class HomePage {
     modal.onDidDismiss((result) => {
       if (result) {
         this.userSettings.addUnit(result);
-        this.communicationService.subscribeToControlUnit(result);
+        this.communicationService.createUnitSubscription(result);
       }
     });
 
@@ -81,7 +81,7 @@ export class HomePage {
       if (result) {
         this.communicationService.unsubscribeFromControlUnit(unit);
         this.userSettings.updateUnit(unit, result);
-        this.communicationService.subscribeToControlUnit(result);
+        this.communicationService.createUnitSubscription(result);
       }
     });
 

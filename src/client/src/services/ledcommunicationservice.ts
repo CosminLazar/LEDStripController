@@ -79,7 +79,7 @@ export class LedCommunicationService {
         new Set(this._topicSubscriptionList).forEach(x => this.hardSubscribe(x));
     };
 
-    public subscribeToControlUnit = (unit: IControlUnit): RX.Observable<ControlUnitState> => {
+    public createUnitSubscription = (unit: IControlUnit): RX.Observable<ControlUnitState> => {
         this.subscribe(unit.getStateResponseTopic);
 
         let filtered = this._statusUpdates

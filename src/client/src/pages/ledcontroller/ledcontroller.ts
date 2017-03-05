@@ -29,7 +29,6 @@ export class LedController {
         this._hasPower = v;
     }
 
-
     private _R: number;
     public get R(): number {
         return this._R;
@@ -58,7 +57,7 @@ export class LedController {
     }
 
     public rgbPreview: string;
-    private _statusUpdatesSubscription: RX.Subscription;
+    private _unitSubscription: RX.Subscription;
 
     constructor(public commService: LedCommunicationService, navParams: NavParams) {
         this.hasPower = false;
@@ -71,10 +70,7 @@ export class LedController {
         this.title = settings.name;
         this.avatarImage = settings.image;
 
-        this.commService.subscribeToControlUnit(settings);
-
-        this._statusUpdatesSubscription = this.commService.subscribeToControlUnit(settings).subscribe(st => {
-            console.log(this.title + " received: " + st);
+        this._unitSubscription = this.commService.createUnitSubscription(settings).subscribe(st => {
             this.updateFromRemoteState(st);
         });
     }
@@ -85,7 +81,6 @@ export class LedController {
         this.R = remoteState.r;
         this.G = remoteState.g;
         this.B = remoteState.b;
-
     };
 
     public refresh = () => {
@@ -101,6 +96,6 @@ export class LedController {
     };
 
     public ionViewWillUnload = () => {
-        this._statusUpdatesSubscription.unsubscribe();
+        this._unitSubscription.unsubscribe();
     };
 }
