@@ -6,19 +6,48 @@ import { UserSettings, IMqttServer, IControlUnit } from './usersettings';
 @Injectable()
 export class LedCommunicationService {
     public v = Date.now();
-    private _statusUpdatesProducer = null;
+    private _statusUpdatesProducer: RX.Observer<{ topic: string, state: ControlUnitState }> = null;
     private _statusUpdates: RX.Observable<{ topic: string, state: ControlUnitState }>;
+
+    private _stateWriteProducer: RX.Observer<{ topic: string, state: ControlUnitState }> = null;
+    private _stateWriteObservable: RX.Observable<{ topic: string, state: ControlUnitState }>;
+
     private _client: Paho.MQTT.Client;
     private _topicSubscriptionList = new Array<string>();
     private _serializer: ControllUnitSerializer;
 
     constructor() {
         this._serializer = new ControllUnitSerializer();
+
         this._statusUpdates = RX.Observable.create(producer => {
             console.log('first subscriber');
             this._statusUpdatesProducer = producer;
             return () => { this._statusUpdatesProducer = null; };
         }).share();
+
+        this._stateWriteObservable = RX.Observable.create(producer => {
+            this._stateWriteProducer = producer;
+            return () => { this._stateWriteProducer = null; }
+        });
+
+        this._stateWriteObservable
+            .bufferTime(250)
+            .filter(x => x.length > 0)
+            .map(x => {
+                //last message for each topic
+                const reduced = x.reduce((prev, current, currentIndext, accumulator) => {
+                    prev[current.topic] = current;
+                    return prev;
+                }, {});
+
+                const lastMsgPerTopic = Object.keys(reduced)
+                    .map<{ topic: string, state: ControlUnitState }>(i => reduced[i]);
+                return lastMsgPerTopic;
+            })
+            .subscribe(messages => {
+                // debugger;
+                messages.forEach(x => this.doSetUnitState(x.topic, x.state));
+            });
     }
 
     public connect = (server: IMqttServer, onLostConnection = (gracefull: boolean) => { }): Promise<any> => {
@@ -62,7 +91,7 @@ export class LedCommunicationService {
     private onConnectedToServer = (onLostConnection: (gracefull: boolean) => any) => {
         this._client.onMessageArrived = (a: Paho.MQTT.Message) => {
             if (this._statusUpdatesProducer) {
-                let topic = a.destinationName
+                let topic = <any>a.destinationName
                 let state = this._serializer.deserialize(<any>a.payloadString);
 
                 this._statusUpdatesProducer.next({ topic: topic, state: state });
@@ -92,8 +121,18 @@ export class LedCommunicationService {
     public setUnitState = (unit: IControlUnit, state: ControlUnitState) => {
         //todo: maybe just dispatch to an internal buffered/throttled Observable
         const topic = unit.setStateTopic;
-        const message = this._serializer.serialize(state);
-        this._client.send(topic, message, 1, false);
+        const message = state;
+
+        this._stateWriteProducer.next({ topic: topic, state: message });
+        //this._client.send(topic, message, 1, false);
+    };
+
+    private doSetUnitState = (topic: string, state: ControlUnitState) => {
+        const stateStr = this._serializer.serialize(state);
+        const deliverAtLeastOnce = 1;
+        const retainMessage = false;
+
+        this._client.send(topic, stateStr, deliverAtLeastOnce, retainMessage);
     };
 
     public unsubscribeFromControlUnit = (unit: IControlUnit) => {
