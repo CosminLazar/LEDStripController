@@ -13,74 +13,77 @@ export class LedController {
     @Input() avatarImage;
 
 
-    private _brightness: number;
+    private _brightness: number = 0;
     public get brightness(): number {
         return this._brightness;
     }
     public set brightness(v: number) {
         this._brightness = v;
+        this.stateChanged();
     }
 
-    private _hasPower: boolean;
+    private _hasPower: boolean = false;
     public get hasPower(): boolean {
         return this._hasPower;
     }
     public set hasPower(v: boolean) {
         this._hasPower = v;
+        this.stateChanged();
     }
 
-    private _R: number;
+    private _R: number = 0;
     public get R(): number {
         return this._R;
     }
     public set R(v: number) {
         this._R = v;
         this.updateRgbPreview();
+        this.stateChanged();
     }
 
-    private _G: number;
+    private _G: number = 0;
     public get G(): number {
         return this._G;
     }
     public set G(v: number) {
         this._G = v;
         this.updateRgbPreview();
+        this.stateChanged();
     }
 
-    private _B: number;
+    private _B: number = 0;
     public get B(): number {
         return this._B;
     }
     public set B(v: number) {
         this._B = v;
         this.updateRgbPreview();
+        this.stateChanged();
     }
 
     public rgbPreview: string;
     private _unitSubscription: RX.Subscription;
+    private _unit: IControlUnit;
+    private _shouldReportStateChanges: boolean = true;
 
     constructor(public commService: LedCommunicationService, navParams: NavParams) {
-        this.hasPower = false;
-        this.brightness = 0;
-        this.R = 0;
-        this.G = 0;
-        this.B = 0;
+        this._unit = <IControlUnit>navParams.data;
+        this.title = this._unit.name;
+        this.avatarImage = this._unit.image;
 
-        let settings = <IControlUnit>navParams.data;
-        this.title = settings.name;
-        this.avatarImage = settings.image;
-
-        this._unitSubscription = this.commService.createUnitSubscription(settings).subscribe(st => {
+        this._unitSubscription = this.commService.createUnitSubscription(this._unit).subscribe(st => {
             this.updateFromRemoteState(st);
         });
     }
 
     private updateFromRemoteState = (remoteState: ControlUnitState) => {
-        this.hasPower = remoteState.isOn;
-        this.brightness = remoteState.brightness;
-        this.R = remoteState.r;
-        this.G = remoteState.g;
-        this.B = remoteState.b;
+        this.doInNonStateReportingContext(() => {
+            this.hasPower = remoteState.isOn;
+            this.brightness = remoteState.brightness;
+            this.R = remoteState.r;
+            this.G = remoteState.g;
+            this.B = remoteState.b;
+        });
     };
 
     public refresh = () => {
@@ -97,5 +100,24 @@ export class LedController {
 
     public ionViewWillUnload = () => {
         this._unitSubscription.unsubscribe();
+    };
+
+    private doInNonStateReportingContext = (action: () => any) => {
+        this._shouldReportStateChanges = false;
+        action();
+        this._shouldReportStateChanges = true;
+    };
+
+    private stateChanged = () => {
+        if (!this._shouldReportStateChanges)
+            return;
+
+        let state = new ControlUnitState();
+        state.isOn = this.hasPower;
+        state.brightness = this.brightness;
+        state.r = this.R;
+        state.g = this.G;
+        state.b = this.B;
+        this.commService.setUnitState(this._unit, state);
     };
 }

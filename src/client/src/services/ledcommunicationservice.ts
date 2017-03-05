@@ -14,7 +14,6 @@ export class LedCommunicationService {
 
     constructor() {
         this._serializer = new ControllUnitSerializer();
-
         this._statusUpdates = RX.Observable.create(producer => {
             console.log('first subscriber');
             this._statusUpdatesProducer = producer;
@@ -88,6 +87,13 @@ export class LedCommunicationService {
             .finally(() => { this.unsubscribe(unit.getStateResponseTopic); });
 
         return filtered;
+    };
+
+    public setUnitState = (unit: IControlUnit, state: ControlUnitState) => {
+        //todo: maybe just dispatch to an internal buffered/throttled Observable
+        const topic = unit.setStateTopic;
+        const message = this._serializer.serialize(state);
+        this._client.send(topic, message, 1, false);
     };
 
     public unsubscribeFromControlUnit = (unit: IControlUnit) => {
