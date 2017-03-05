@@ -5,7 +5,7 @@ import { HomePage } from '../pages/home/home';
 import { LedController } from '../pages/ledcontroller/ledcontroller';
 import { AddNew } from '../pages/addnew/addnew';
 import { UserSettings } from '../services/usersettings';
-import { LedCommunicationService } from '../services/ledcommunicationservice';
+import { LedCommunicationService, ControllUnitSerializer } from '../services/ledcommunicationservice';
 import { ServerSettingsPage } from '../pages/serversettings/serversettings';
 import { Storage } from '@ionic/storage';
 
@@ -27,6 +27,6 @@ import { Storage } from '@ionic/storage';
     AddNew,
     ServerSettingsPage
   ],
-  providers: [UserSettings, LedCommunicationService, Storage]
+  providers: [UserSettings, LedCommunicationService, Storage, ControllUnitSerializer]
 })
 export class AppModule {}

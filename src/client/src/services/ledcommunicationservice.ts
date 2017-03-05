@@ -7,21 +7,19 @@ import { UserSettings, IMqttServer, IControlUnit } from './usersettings';
 export class LedCommunicationService {
     public v = Date.now();
     private _statusUpdatesProducer = null;
-    public statusUpdates: RX.Observable<string>;
+    private _statusUpdates: RX.Observable<{ topic: string, state: ControlUnitState }>;
     private _client: Paho.MQTT.Client;
     private _topicSubscriptionList = new Array<string>();
+    private _serializer: ControllUnitSerializer;
 
     constructor() {
-        this.statusUpdates = RX.Observable.create(producer => {
+        this._serializer = new ControllUnitSerializer();
+
+        this._statusUpdates = RX.Observable.create(producer => {
             console.log('first subscriber');
             this._statusUpdatesProducer = producer;
             return () => { this._statusUpdatesProducer = null; };
         }).share();
-
-        setInterval(() => {
-            if (this._statusUpdatesProducer)
-                this._statusUpdatesProducer.next('test - ' + this.v.toString());
-        }, 1000);
     }
 
     public connect = (server: IMqttServer, onLostConnection = (gracefull: boolean) => { }): Promise<any> => {
@@ -38,7 +36,7 @@ export class LedCommunicationService {
     };
 
     public disconnect = () => {
-        if (this._client.isConnected()) {
+        if (this._client && this._client.isConnected()) {
             this._client.disconnect();
         }
     };
@@ -56,18 +54,19 @@ export class LedCommunicationService {
                     userName: server.user,
                     password: server.password,
                     useSSL: true,
-                    onSuccess: (a, b, c) => { debugger; resolve(); },
-                    onFailure: (a, b, c) => { debugger; reject(a); }
+                    onSuccess: (a, b, c) => { resolve(); },
+                    onFailure: (a, b, c) => { reject(a); }
                 });
         });
     };
 
     private onConnectedToServer = (onLostConnection: (gracefull: boolean) => any) => {
         this._client.onMessageArrived = (a: Paho.MQTT.Message) => {
-            debugger;
             if (this._statusUpdatesProducer) {
-                let payload = a.payloadString;
-                this._statusUpdatesProducer.next(payload);
+                let topic = a.destinationName
+                let state = this._serializer.deserialize(<any>a.payloadString);
+
+                this._statusUpdatesProducer.next({ topic: topic, state: state });
             }
         };
 
@@ -76,12 +75,19 @@ export class LedCommunicationService {
             onLostConnection(isGracefull);
         };
 
-        this._topicSubscriptionList.forEach(x => this.hardSubscribe(x));
+        //subscribe only once 
+        new Set(this._topicSubscriptionList).forEach(x => this.hardSubscribe(x));
     };
 
-    public subscribeToControlUnit = (unit: IControlUnit) => {
+    public subscribeToControlUnit = (unit: IControlUnit): RX.Observable<ControlUnitState> => {
         this.subscribe(unit.getStateResponseTopic);
-        //this.subscribe(unit.writeTopic);
+
+        let filtered = this._statusUpdates
+            .filter((value) => value.topic === unit.getStateResponseTopic)
+            .map(x => x.state)
+            .finally(() => { this.unsubscribe(unit.getStateResponseTopic); });
+
+        return filtered;
     };
 
     public unsubscribeFromControlUnit = (unit: IControlUnit) => {
@@ -97,17 +103,14 @@ export class LedCommunicationService {
 
         this._topicSubscriptionList.splice(index, 1);
 
-        this.hardUnsubscribe(topic);
+        let otherSubscriptionsExist = this._topicSubscriptionList.indexOf(topic) >= 0;
+
+        if (!otherSubscriptionsExist)
+            this.hardUnsubscribe(topic);
     };
 
     private subscribe = (topic: string) => {
-        let alreadySubscribed = this._topicSubscriptionList.find(x => x === topic) !== undefined;
-        if (alreadySubscribed) {
-            return;
-        }
-
         this._topicSubscriptionList.push(topic);
-
         this.hardSubscribe(topic);
     };
 
@@ -125,5 +128,91 @@ export class LedCommunicationService {
 
         console.info('Unsubscribing from ' + topic);
         this._client.unsubscribe(topic, {});
+    };
+}
+
+export class ControlUnitState {
+
+    private _isOn: boolean;
+    public get isOn(): boolean {
+        return this._isOn;
+    }
+    public set isOn(v: boolean) {
+        this._isOn = v;
+    }
+
+    private _r: number;
+    public get r(): number {
+        return this._r;
+    }
+    public set r(r: number) {
+        if (r < 0 || r > 255)
+            throw 'invalid value, range [0,255]';
+        this._r = r;
+    }
+
+    private _g: number;
+    public get g(): number {
+        return this._g;
+    }
+    public set g(g: number) {
+        if (g < 0 || g > 255)
+            throw 'invalid value, range [0,255]';
+        this._g = g;
+    }
+
+    private _b: number;
+    public get b(): number {
+        return this._b;
+    }
+    public set b(b: number) {
+        if (b < 0 || b > 255)
+            throw 'invalid value, range [0,255]';
+        this._b = b;
+    }
+
+
+    private _brightness: number;
+    public get brightness(): number {
+        return this._brightness;
+    }
+    public set brightness(v: number) {
+        if (v < 0 || v > 100)
+            throw 'invalid value, range [0,100]';
+        this._brightness = v;
+    }
+}
+
+@Injectable()
+export class ControllUnitSerializer {
+    public serialize = (state: ControlUnitState): string => {
+        let values = [
+            state.isOn ? '1' : '0',
+            state.r.toString(),
+            state.g.toString(),
+            state.b.toString(),
+            state.brightness.toString()
+        ];
+
+        let serialized = values.join(';');
+
+        return serialized;
+    };
+
+    public deserialize = (serialized: string): ControlUnitState => {
+        let state = new ControlUnitState();
+
+        let values = serialized.split(';');
+
+        if (values.length < 5)
+            throw 'Invalid message';
+
+        state.isOn = values[0] === '1' ? true : false;
+        state.r = Number(values[1]);
+        state.g = Number(values[2])
+        state.b = Number(values[3])
+        state.brightness = Number(values[4])
+
+        return state;
     };
 }

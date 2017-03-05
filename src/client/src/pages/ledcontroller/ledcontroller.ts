@@ -53,7 +53,7 @@ export class LedController {
 
         this.commService.subscribeToControlUnit(settings);
 
-        this._statusUpdatesSubscription = this.commService.statusUpdates.subscribe(st => {
+        this._statusUpdatesSubscription = this.commService.subscribeToControlUnit(settings).subscribe(st => {
             console.log(this.title + " received: " + st);
         });
     }

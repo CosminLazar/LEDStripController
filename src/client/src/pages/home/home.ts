@@ -32,7 +32,8 @@ export class HomePage {
       () => {
         console.log('connected');
         //subscribe
-        this.userSettings.controlUnits.forEach(x => this.communicationService.subscribeToControlUnit(x));
+        //todo, get a hold of subscription
+        //this.userSettings.controlUnits.forEach(x => this.communicationService.subscribeToControlUnit(x));
         //request status for each
       },
       () => { console.log('could not connect'); });
