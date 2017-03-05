@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { NavParams } from 'ionic-angular';
-import { LedCommunicationService } from '../../services/ledcommunicationservice';
+import { LedCommunicationService, ControlUnitState } from '../../services/ledcommunicationservice';
 import { IControlUnit } from '../../services/usersettings';
 import RX from 'rxjs/RX';
 
@@ -11,6 +11,24 @@ import RX from 'rxjs/RX';
 export class LedController {
     @Input() title;
     @Input() avatarImage;
+
+
+    private _brightness: number;
+    public get brightness(): number {
+        return this._brightness;
+    }
+    public set brightness(v: number) {
+        this._brightness = v;
+    }
+
+    private _hasPower: boolean;
+    public get hasPower(): boolean {
+        return this._hasPower;
+    }
+    public set hasPower(v: boolean) {
+        this._hasPower = v;
+    }
+
 
     private _R: number;
     public get R(): number {
@@ -43,6 +61,8 @@ export class LedController {
     private _statusUpdatesSubscription: RX.Subscription;
 
     constructor(public commService: LedCommunicationService, navParams: NavParams) {
+        this.hasPower = false;
+        this.brightness = 0;
         this.R = 0;
         this.G = 0;
         this.B = 0;
@@ -55,8 +75,18 @@ export class LedController {
 
         this._statusUpdatesSubscription = this.commService.subscribeToControlUnit(settings).subscribe(st => {
             console.log(this.title + " received: " + st);
+            this.updateFromRemoteState(st);
         });
     }
+
+    private updateFromRemoteState = (remoteState: ControlUnitState) => {
+        this.hasPower = remoteState.isOn;
+        this.brightness = remoteState.brightness;
+        this.R = remoteState.r;
+        this.G = remoteState.g;
+        this.B = remoteState.b;
+
+    };
 
     public refresh = () => {
         return new Promise((resolve, reject) => {
