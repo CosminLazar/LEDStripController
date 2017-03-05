@@ -70,11 +70,14 @@ export class LedController {
         this._unit = <IControlUnit>navParams.data;
         this.title = this._unit.name;
         this.avatarImage = this._unit.image;
+    }
 
+    private ionViewDidLoad = () => {
+        this.updateRgbPreview();
         this._unitSubscription = this.commService.createUnitSubscription(this._unit).subscribe(st => {
             this.updateFromRemoteState(st);
         });
-    }
+    };
 
     private updateFromRemoteState = (remoteState: ControlUnitState) => {
         this.doInNonStateReportingContext(() => {
