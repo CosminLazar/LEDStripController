@@ -10,25 +10,36 @@
 #endif
 #include <Adafruit_NeoPixel.h>
 #include "LedStatus.h"
+#include "MqttParameters.h"
 
 class LedHeperClass
 {
 protected:
+	const MqttParametersClass * mqttParameters;
 	Adafruit_NeoPixel* strip;
 	LedStatusClass currentState = LedStatusClass(false, 0, 0, 0, 0);
+	bool _isOn = false;
+	uint8_t _brightness = 0;
+	float _hue = 0;
+	float _saturation = 0;
 public:
-	LedHeperClass(uint8_t noOfLeds, uint8_t pin);
+	LedHeperClass(uint8_t noOfLeds, uint8_t pin, const MqttParametersClass * mqttParameters);
 	void init();
-	void allWhite();
-	void set(LedStatusClass status);
-	LedStatusClass getState();
+	void powerOn();
+	void powerOff();
+	void setBrightness(uint8_t brigtness);
+	void setHue(float hue);
+	void setSaturation(float saturation);
 private:
-	///<summary>Maps brightness from [0,100] interval to [0,255]</summary>
-	///<param name="brightness">Brightness value in [0,100] range</param>	
-	uint8_t mapBrightness(uint8_t brightness);
+	void onMqttConnected(void * data);
+	void onMqttMessage(void * data);
+	void reportPowerState();
+	void reportBrightnessState();
+	void reportHueState();
+	void reportSaturationState();
+	void updateHardwareState();
+	void HSV_to_RGB(float h, float s, float v, uint8_t *r, uint8_t *g, uint8_t *b);
 };
-
-extern LedHeperClass LedHeper;
 
 #endif
 

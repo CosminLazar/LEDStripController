@@ -1,3 +1,4 @@
+#include "MqttParameters.h"
 #include "LedStatusConverter.h"
 #include "LedStatus.h"
 #include <Adafruit_NeoPixel.h>
@@ -8,69 +9,63 @@
 #include <MemoryFree.h>
 #include "LedStatus.h"
 #include "LedStatusConverter.h"
+#include "WString.h"
+#include "MqttParameters.h"
 
 MqttHelperClass mqtt;
-LedHeperClass led1(60, 5);
-LedHeperClass led2(60, 6);
+
+const MqttParametersClass * p1;
+const MqttParametersClass * p2;
+const LedHeperClass * led1;
+const LedHeperClass * led2;
 
 void setup() {
 
-	FP<void, const char *> s;
-	s.attach(&statusRequested);
-	mqtt.subscribe("st", s);
+	p1 = new MqttParametersClass(&mqtt, F("bedroom/light/1"));
+	p1->configurePower(F("bedroom/light/1/get"), F("bedroom/light/1/set"), F("bedroom/light/1/status"));
+	p1->configureBrigtness(F("bedroom/light/1/get/brightness"), F("bedroom/light/1/set/brightness"), F("bedroom/light/1/status/brightness"));
+	p1->configureHue(F("bedroom/light/1/get/hue"), F("bedroom/light/1/set/hue"), F("bedroom/light/1/status/hue"));
+	p1->configureSaturation(F("bedroom/light/1/get/saturation"), F("bedroom/light/1/set/saturation"), F("bedroom/light/1/status/saturation"));
 
-	FP<void, const char *> sl1;
-	sl1.attach(&setLights1);
-	mqtt.subscribe("sl1", sl1);
 
-	FP<void, const char *> sl2;
-	sl2.attach(&setLights2);
-	mqtt.subscribe("sl2", sl2);
+	p2 = new MqttParametersClass(&mqtt, F("bedroom/light/2"));
+	p2->configurePower(F("bedroom/light/2/get"), F("bedroom/light/2/set"), F("bedroom/light/2/status"));
+	p2->configureBrigtness(F("bedroom/light/2/get/brightness"), F("bedroom/light/2/set/brightness"), F("bedroom/light/2/status/brightness"));
+	p2->configureHue(F("bedroom/light/2/get/hue"), F("bedroom/light/2/set/hue"), F("bedroom/light/2/status/hue"));
+	p2->configureSaturation(F("bedroom/light/2/get/saturation"), F("bedroom/light/2/set/saturation"), F("bedroom/light/2/status/saturation"));
 
-	FP<void, const char *> stl1;
-	stl1.attach(&statusLights1);
-	mqtt.subscribe("stl1", stl1);
+	led1 = new LedHeperClass(60, 5, p1);
+	led2 = new LedHeperClass(60, 6, p2);
 
-	FP<void, const char *> stl2;
-	stl2.attach(&statusLights2);
-	mqtt.subscribe("stl2", stl2);
 
-	led1.init();
-	led2.init();
+	FP<void, void *> connectedCb;
+	connectedCb.attach(&connected);
+	mqtt.onConnect(connectedCb);
+
+	FP<void, void *> dataCb;
+	dataCb.attach(&data);
+	mqtt.onData(dataCb);
+
+	led1->init();
+	led2->init();
+
 	mqtt.init();
 }
 
 void loop() {
-	freeMemory();
 	mqtt.process();
+}
+
+void connected(void * data) {
+
+}
+
+void data(void * response) {
+
 }
 
 void statusRequested(const char * data) {
 	char buff[10];
 	char * freeMem = itoa(freeMemory(), buff, 10);
 	mqtt.publish(F("str"), freeMem);
-}
-
-void setLights1(const char * data) {
-	LedStatusClass st = LedStatusConverterClass::FromStr(data);
-	led1.set(st);
-}
-
-void setLights2(const char * data) {
-	LedStatusClass st = LedStatusConverterClass::FromStr(data);
-	led2.set(st);
-}
-
-void statusLights1(const char * data) {	
-	char statusStr[32];
-	LedStatusConverterClass::ToStr(led1.getState(), statusStr);
-
-	mqtt.publish("stl1r", statusStr);
-}
-
-void statusLights2(const char * data) {	
-	char statusStr[32];
-	LedStatusConverterClass::ToStr(led2.getState(), statusStr);
-
-	mqtt.publish("stl2r", statusStr);
 }

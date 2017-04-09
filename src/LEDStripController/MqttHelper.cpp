@@ -67,50 +67,40 @@ void MqttHelperClass::wifiCallback(void * response)
 }
 
 void MqttHelperClass::mqttConnected(void* response) {
-	mqttIsConnected = true;
-	publish(F("/topic/0"), "hello world!");
-
-	for (size_t i = 0; i < subscriptionList.size(); i++)
+	for (uint8_t i = 0; i < connectCb.size(); i++)
 	{
-		const char * topic = subscriptionList.keyAt(i);
-		mqtt->subscribe(topic);
+		connectCb.get(i)(response);
 	}
 }
 
 void MqttHelperClass::mqttDisconnected(void* response) {
-	mqttIsConnected = false;
-}
-
-void MqttHelperClass::mqttDataCallback(void* response) {
-	RESPONSE res(response);
-	String topic = res.popString();
-	String data = res.popString();
-	const char * topicCStr = topic.c_str();
-	const char * dataCStr = data.c_str();
-
-	if (subscriptionList.contains(topicCStr)) {
-		for (size_t i = 0; i < subscriptionList[topicCStr]->size(); i++)
-		{
-			subscriptionList[topicCStr]->get(i)(dataCStr);
-		}
+	for (uint8_t i = 0; i < disconnectCb.size(); i++)
+	{
+		disconnectCb.get(i)(response);
 	}
 }
 
-bool MqttHelperClass::topicComparator(const char * a, const char * b)
-{
-	return strcmp(a, b) == 0;
+void MqttHelperClass::mqttDataCallback(void* response) {
+	for (uint8_t i = 0; i < dataCb.size(); i++)
+	{
+		dataCb.get(i)(response);
+	}
 }
 
 void MqttHelperClass::process() {
 	esp->process();
 }
 
-void MqttHelperClass::subscribe(const char * topic, FP<void, const char *> callback) {
-	if (!subscriptionList.contains(topic)) {
-		subscriptionList[topic] = new LinkedList<FP<void, const char *>>();
-	}
+void MqttHelperClass::subscribe(const char * topic) {
+	mqtt->subscribe(topic);
+}
 
-	subscriptionList[topic]->add(callback);
+void MqttHelperClass::subscribe(const __FlashStringHelper * topic)
+{
+	char buff[64];
+	char * topicStr = strcpy_P(buff, (const char *)topic);
+
+	subscribe(topicStr);
 }
 
 void MqttHelperClass::publish(const char * topic, char * data) {
@@ -119,9 +109,32 @@ void MqttHelperClass::publish(const char * topic, char * data) {
 
 void MqttHelperClass::publish(const __FlashStringHelper * topic, char * data)
 {
-	char buff[32];
+	char buff[64];
 	char * topicStr = strcpy_P(buff, (const char *)topic);
 	publish(topicStr, data);
 }
 
+boolean MqttHelperClass::lastWillAndTestament(const char * topic, const char * message)
+{
+	return lastWillAndTestament(topic, message, 0, 0);
+}
 
+boolean MqttHelperClass::lastWillAndTestament(const char * topic, const char * message, uint8_t qos, uint8_t retain)
+{
+	return mqtt->lwt(topic, message, qos, retain);
+}
+
+void MqttHelperClass::onData(FP<void, void*> callback)
+{
+	this->dataCb.add(callback);
+}
+
+void MqttHelperClass::onConnect(FP<void, void*> callback)
+{
+	this->connectCb.add(callback);
+}
+
+void MqttHelperClass::onDisconnect(FP<void, void*> callback)
+{
+	this->disconnectCb.add(callback);
+}
