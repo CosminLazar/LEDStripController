@@ -22,16 +22,17 @@ const String power("/power");
 const String brightness("/brightness");
 const String hue("/hue");
 const String saturation("/saturation"); 
+const String animation("/anm");
  
 void setup() {	
 	p1 = new MqttParametersClass(&mqtt, String("b/l1"));
 	p1->configureVerbs(get, set, status, connected);
-	p1->configureComponents(power, brightness, hue, saturation);
+	p1->configureComponents(power, brightness, hue, saturation, animation);
 	
 
 	p2 = new MqttParametersClass(&mqtt, String("b/l2"));
 	p2->configureVerbs(get, set, status, connected);
-	p2->configureComponents(power, brightness, hue, saturation);
+	p2->configureComponents(power, brightness, hue, saturation, animation);
 
 	led1 = new LedHeperClass(60, 5, p1, 8);
 	led2 = new LedHeperClass(60, 6, p2, 9);

@@ -12,12 +12,13 @@ void MqttParametersClass::configureVerbs(const String & get, const String & set,
 	_verb_connected = connected;
 }
 
-void MqttParametersClass::configureComponents(const String & power, const String & brightness, const String & hue, const String & saturation)
+void MqttParametersClass::configureComponents(const String & power, const String & brightness, const String & hue, const String & saturation, const String & animation)
 {
 	_power = power;
 	_brightness = brightness;
 	_hue = hue;
 	_saturation = saturation;
+	_animation = animation;
 }
 
 void MqttParametersClass::subscribe()
@@ -33,6 +34,9 @@ void MqttParametersClass::subscribe()
 
 	subscribeTo(_verb_get, _saturation);
 	subscribeTo(_verb_set, _saturation);
+
+	subscribeTo(_verb_get, _animation);
+	subscribeTo(_verb_set, _animation);
 }
 
 void MqttParametersClass::reportConnected()
@@ -42,7 +46,7 @@ void MqttParametersClass::reportConnected()
 	bool retainMessage = true;
 
 	//when connected, report fully operational (2)	
-	mqtt->publish(connectedTopic.c_str(), String("2").c_str(), deliverAtMostOnce, retainMessage);
+	mqtt->publish(connectedTopic.c_str(), "2", deliverAtMostOnce, retainMessage);
 
 	//when disconnected, report disconnected (0)	
 	mqtt->lastWillAndTestament(connectedTopic.c_str(), "0", deliverAtMostOnce, retainMessage);
@@ -82,6 +86,11 @@ bool MqttParametersClass::isHue(const String & topic)
 bool MqttParametersClass::isSaturation(const String & topic)
 {
 	return isResource(topic, _saturation);
+}
+
+bool MqttParametersClass::isAnimation(const String & topic)
+{
+	return isResource(topic, _animation);
 }
 
 void MqttParametersClass::reportPower(const String & value)
