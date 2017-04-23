@@ -44,10 +44,10 @@ void LedHeperClass::onMqttConnected(void * data)
 	this->mqttParameters->subscribe();
 	this->mqttParameters->reportConnected();
 
-	reportPowerState();
-	reportBrightnessState();
-	reportHueState();
-	reportSaturationState();
+	requestPowerStateReport();
+	requestBrightnessStateReport();
+	requestHueStateReport();
+	requestSaturationStateReport();
 }
 
 void LedHeperClass::onMqttMessage(void * message) {
@@ -69,7 +69,7 @@ void LedHeperClass::onMqttMessage(void * message) {
 			setBrightness(brightness);
 			return;
 		}
-
+		
 		if (this->mqttParameters->isHue(topic)) {
 			float hue = data.toFloat();
 			setHue(hue);
@@ -98,22 +98,22 @@ void LedHeperClass::onMqttMessage(void * message) {
 		if (this->mqttParameters->isGet(topic)) {
 
 			if (this->mqttParameters->isBrightness(topic)) {
-				reportBrightnessState();
+				requestBrightnessStateReport();
 				return;
 			}
 
 			if (this->mqttParameters->isHue(topic)) {
-				reportHueState();
+				requestHueStateReport();
 				return;
 			}
 
 			if (this->mqttParameters->isSaturation(topic)) {
-				reportSaturationState();
+				requestSaturationStateReport();
 				return;
 			}
 
 			if (this->mqttParameters->isPower(topic)) {
-				reportPowerState();
+				requestPowerStateReport();
 				return;
 			}
 		}
@@ -136,7 +136,7 @@ void LedHeperClass::powerOn()
 
 	requestUpdateHardwareState();
 
-	reportPowerState();
+	requestPowerStateReport();
 }
 
 void LedHeperClass::powerOff()
@@ -148,7 +148,7 @@ void LedHeperClass::powerOff()
 
 	requestUpdateHardwareState();
 
-	reportPowerState();
+	requestPowerStateReport();
 }
 
 void LedHeperClass::setBrightness(uint8_t brigtness)
@@ -166,7 +166,7 @@ void LedHeperClass::setBrightness(uint8_t brigtness)
 
 	requestUpdateHardwareState();
 
-	reportBrightnessState();	
+	requestBrightnessStateReport();	
 }
 
 void LedHeperClass::setHue(float hue)
@@ -175,7 +175,7 @@ void LedHeperClass::setHue(float hue)
 
 	requestUpdateHardwareState();
 
-	reportHueState();
+	requestHueStateReport();
 }
 
 void LedHeperClass::setSaturation(float saturation)
@@ -184,28 +184,28 @@ void LedHeperClass::setSaturation(float saturation)
 
 	requestUpdateHardwareState();	
 
-	reportSaturationState();
+	requestSaturationStateReport();
 }
 
-void LedHeperClass::reportPowerState()
+void LedHeperClass::requestPowerStateReport()
 {
 	pendingStatusReport[PENDING_POWER_REPORT] = 1;
 	_statusReportRequestTimestamp = millis();
 }
 
-void LedHeperClass::reportBrightnessState()
+void LedHeperClass::requestBrightnessStateReport()
 {
 	pendingStatusReport[PENDING_BRIGHTNESS_REPORT] = 1;
 	_statusReportRequestTimestamp = millis();
 }
 
-void LedHeperClass::reportHueState()
+void LedHeperClass::requestHueStateReport()
 {
 	pendingStatusReport[PENDING_HUE_REPORT] = 1;
 	_statusReportRequestTimestamp = millis();
 }
 
-void LedHeperClass::reportSaturationState()
+void LedHeperClass::requestSaturationStateReport()
 {
 	pendingStatusReport[PENDING_SATURATION_REPORT] = 1;
 	_statusReportRequestTimestamp = millis();

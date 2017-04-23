@@ -24,7 +24,7 @@ class LedHeperClass
 {
 protected:
 	const MqttParametersClass * mqttParameters;
-	Adafruit_NeoPixel* strip;	
+	Adafruit_NeoPixel* strip;
 	TouchSensorReaderClass * touchSensorReader;
 	uint8_t pendingStatusReport[4] = { 0,0,0,0 };
 	bool _hardwareUpdateRequested = true;
@@ -41,22 +41,26 @@ public:
 	bool isOn();
 	void powerOn();
 	void powerOff();
-	void setBrightness(uint8_t brigtness);	
+	void setBrightness(uint8_t brigtness);
 	void setHue(float hue);
 	void setSaturation(float saturation);
 private:
 	void onMqttConnected(void * data);
 	void onMqttMessage(void * data);
-	void reportPowerState();
-	void reportBrightnessState();
-	void reportHueState();
-	void reportSaturationState();	
+
+	void requestPowerStateReport();
+	void requestBrightnessStateReport();
+	void requestHueStateReport();
+	void requestSaturationStateReport();
+
 	void requestUpdateHardwareState();
 	void processHardwareUpdates();
 	void updateHardwareState();
-	static void HSV_to_RGB(float h, float s, float v, uint8_t *r, uint8_t *g, uint8_t *b);
+
 	void processTouchSensor();
 	void processPendingStatusReports();
+
+	static void HSV_to_RGB(float h, float s, float v, uint8_t *r, uint8_t *g, uint8_t *b);
 };
 
 #endif
