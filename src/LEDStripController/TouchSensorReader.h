@@ -9,9 +9,11 @@
 #include "WProgram.h"
 #endif
 
-#define TOUCHSTATE_INACTIVE 0
+#define TOUCHSTATE_IDLE 0
 #define TOUCHSTATE_READINGINPUT 1
 #define TOUCHSTATE_READINGLONGINPUT 2
+#define LONG_INPUT_THRESHOLD_TIME 500
+#define LONG_INPUT_STEP_TIME 250
 
 enum TouchResult :uint8_t { nothing = 0, toggle = 1, long_press = 2 };
 
@@ -27,6 +29,8 @@ public:
 	TouchSensorReaderClass(uint8_t sensorPin) :_sensorPin(sensorPin) {};
 	void init();
 	TouchResult process();
+private:
+	void EnterIdleState();
 };
 
 #endif
