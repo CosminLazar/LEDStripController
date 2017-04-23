@@ -6,6 +6,12 @@
 #include "WString.h"
 #include "MqttParameters.h"
 
+#define LED1_HARDWARE_CONTROL_PIN 5
+#define LED2_HARDWARE_CONTROL_PIN 6
+
+#define LED1_TOUCH_CONTROL_PIN 7
+#define LED2_TOUCH_CONTROL_PIN 10
+
 MqttHelperClass mqtt;
 
 const MqttParametersClass * p1;
@@ -33,13 +39,8 @@ void setup() {
 	p2->configureVerbs(get, set, status, connected);
 	p2->configureComponents(power, brightness, hue, saturation);
 
-	led1 = new LedHeperClass(60, 5, p1, 8);
-	led2 = new LedHeperClass(60, 6, p2, 9);
-
-
-	FP<void, void *> connectedCb;
-	connectedCb.attach(&onconnected);
-	mqtt.onConnect(connectedCb);
+	led1 = new LedHeperClass(60, LED1_HARDWARE_CONTROL_PIN, p1, LED1_TOUCH_CONTROL_PIN);
+	led2 = new LedHeperClass(60, LED2_HARDWARE_CONTROL_PIN, p2, LED2_TOUCH_CONTROL_PIN);
 
 	FP<void, void *> dataCb;
 	dataCb.attach(&data);
@@ -54,10 +55,6 @@ void setup() {
 void loop() {
 	led1->process();
 	led2->process();
-}
-
-void onconnected(void * data) {
-
 }
 
 void data(void * response) {
