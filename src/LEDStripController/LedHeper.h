@@ -33,7 +33,7 @@ protected:
 	bool _isOn = false;
 	uint8_t _brightness = 0;
 	float _hue = 0;
-	float _saturation = 0;
+	float _saturation = 0;	
 public:
 	LedHeperClass(uint8_t noOfLeds, uint8_t pin, const MqttParametersClass * mqttParameters, uint8_t touchSensorPin);
 	void init();

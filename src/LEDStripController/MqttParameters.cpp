@@ -12,13 +12,12 @@ void MqttParametersClass::configureVerbs(const String & get, const String & set,
 	_verb_connected = connected;
 }
 
-void MqttParametersClass::configureComponents(const String & power, const String & brightness, const String & hue, const String & saturation, const String & animation)
+void MqttParametersClass::configureComponents(const String & power, const String & brightness, const String & hue, const String & saturation)
 {
 	_power = power;
 	_brightness = brightness;
 	_hue = hue;
-	_saturation = saturation;
-	_animation = animation;
+	_saturation = saturation;	
 }
 
 void MqttParametersClass::subscribe()
@@ -33,10 +32,7 @@ void MqttParametersClass::subscribe()
 	subscribeTo(_verb_set, _hue);
 
 	subscribeTo(_verb_get, _saturation);
-	subscribeTo(_verb_set, _saturation);
-
-	subscribeTo(_verb_get, _animation);
-	subscribeTo(_verb_set, _animation);
+	subscribeTo(_verb_set, _saturation);	
 }
 
 void MqttParametersClass::reportConnected()
@@ -86,11 +82,6 @@ bool MqttParametersClass::isHue(const String & topic)
 bool MqttParametersClass::isSaturation(const String & topic)
 {
 	return isResource(topic, _saturation);
-}
-
-bool MqttParametersClass::isAnimation(const String & topic)
-{
-	return isResource(topic, _animation);
 }
 
 void MqttParametersClass::reportPower(const String & value)

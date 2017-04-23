@@ -27,15 +27,14 @@ private:
 	String _power;
 	String _brightness;
 	String _hue;
-	String _saturation;
-	String _animation;
+	String _saturation;	
 
 public:
 	MqttParametersClass(const MqttHelperClass * mqttBridge, const String & topLevelAddress)
 		:mqtt(mqttBridge), _topLevelAddress(topLevelAddress) {};
 
 	void configureVerbs(const String & get, const String & set, const String & status, const String & connected);
-	void configureComponents(const String & power, const String & brightness, const String & hue, const String & saturation, const String & animation);
+	void configureComponents(const String & power, const String & brightness, const String & hue, const String & saturation);
 	void subscribe();
 	void reportConnected();
 
@@ -46,8 +45,7 @@ public:
 	bool isPower(const String & topic);
 	bool isBrightness(const String & topic);
 	bool isHue(const String & topic);
-	bool isSaturation(const String & topic);
-	bool isAnimation(const String & topic);
+	bool isSaturation(const String & topic);	
 
 	void reportPower(const String & value);
 	void reportBrightness(const String & value);
