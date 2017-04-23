@@ -25,7 +25,9 @@ void LedHeperClass::init()
 void LedHeperClass::process()
 {
 	const MqttHelperClass * mqtt = mqttParameters->mqtt;
+	
 	mqtt->process();
+	
 	processTouchSensor();
 
 	if (!mqtt->hasPendingData()) {
