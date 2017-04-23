@@ -17,6 +17,9 @@
 #define PENDING_HUE_REPORT 2
 #define PENDING_SATURATION_REPORT 3
 
+#define PENDING_REPORT_DEBOUNCE 300
+#define HARDWARE_UPDATE_DEBOUNCE 250
+
 class LedHeperClass
 {
 protected:
@@ -24,8 +27,9 @@ protected:
 	Adafruit_NeoPixel* strip;	
 	TouchSensorReaderClass * touchSensorReader;
 	uint8_t pendingStatusReport[4] = { 0,0,0,0 };
-	bool _shouldUpdateHardware = true;
-	unsigned long _lastHardwareUpdate = 0;
+	bool _hardwareUpdateRequested = true;
+	unsigned long _hardwareUpdateRequestTimestamp = 0;
+	unsigned long _statusReportRequestTimestamp = 0;
 	bool _isOn = false;
 	uint8_t _brightness = 0;
 	float _hue = 0;
@@ -47,9 +51,11 @@ private:
 	void reportPowerState();
 	void reportBrightnessState();
 	void reportHueState();
-	void reportSaturationState();
+	void reportSaturationState();	
+	void requestUpdateHardwareState();
+	void processHardwareUpdates();
 	void updateHardwareState();
-	void HSV_to_RGB(float h, float s, float v, uint8_t *r, uint8_t *g, uint8_t *b);
+	static void HSV_to_RGB(float h, float s, float v, uint8_t *r, uint8_t *g, uint8_t *b);
 	void processTouchSensor();
 	void processPendingStatusReports();
 };

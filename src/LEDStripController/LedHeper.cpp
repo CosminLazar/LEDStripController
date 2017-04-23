@@ -110,7 +110,7 @@ void LedHeperClass::process()
 	processTouchSensor();
 
 	if (!mqtt->hasPendingData()) {
-		updateHardwareState();
+		processHardwareUpdates();
 	}
 
 	if (!mqtt->hasPendingData()) {
@@ -130,7 +130,7 @@ void LedHeperClass::powerOn()
 
 	_isOn = true;
 
-	_shouldUpdateHardware = true;
+	requestUpdateHardwareState();
 
 	reportPowerState();
 }
@@ -142,7 +142,7 @@ void LedHeperClass::powerOff()
 
 	_isOn = false;
 
-	_shouldUpdateHardware = true;
+	requestUpdateHardwareState();
 
 	reportPowerState();
 }
@@ -150,10 +150,6 @@ void LedHeperClass::powerOff()
 void LedHeperClass::setBrightness(uint8_t brigtness)
 {
 	_brightness = brigtness;
-
-	_shouldUpdateHardware = true;
-
-	reportBrightnessState();
 
 	if (brigtness == 0)
 	{
@@ -163,6 +159,10 @@ void LedHeperClass::setBrightness(uint8_t brigtness)
 	{
 		powerOn();
 	}
+
+	requestUpdateHardwareState();
+
+	reportBrightnessState();	
 }
 
 uint8_t LedHeperClass::getBrightness()
@@ -174,7 +174,7 @@ void LedHeperClass::setHue(float hue)
 {
 	_hue = hue;
 
-	_shouldUpdateHardware = true;
+	requestUpdateHardwareState();
 
 	reportHueState();
 }
@@ -183,7 +183,7 @@ void LedHeperClass::setSaturation(float saturation)
 {
 	_saturation = saturation;
 
-	_shouldUpdateHardware = true;
+	requestUpdateHardwareState();	
 
 	reportSaturationState();
 }
@@ -191,39 +191,49 @@ void LedHeperClass::setSaturation(float saturation)
 void LedHeperClass::reportPowerState()
 {
 	pendingStatusReport[PENDING_POWER_REPORT] = 1;
-
-
-	/*const MqttHelperClass * mqtt = mqttParameters->mqtt;
-	mqtt->publish(mqttParameters->power_status, String(_isOn ? 1 : 0).c_str(), 0, true);*/
+	_statusReportRequestTimestamp = millis();
 }
 
 void LedHeperClass::reportBrightnessState()
 {
 	pendingStatusReport[PENDING_BRIGHTNESS_REPORT] = 1;
+	_statusReportRequestTimestamp = millis();
 }
 
 void LedHeperClass::reportHueState()
 {
 	pendingStatusReport[PENDING_HUE_REPORT] = 1;
+	_statusReportRequestTimestamp = millis();
 }
 
 void LedHeperClass::reportSaturationState()
 {
 	pendingStatusReport[PENDING_SATURATION_REPORT] = 1;
+	_statusReportRequestTimestamp = millis();
+}
+
+void LedHeperClass::requestUpdateHardwareState()
+{
+	_hardwareUpdateRequestTimestamp = millis();
+	_hardwareUpdateRequested = true;
+}
+
+void LedHeperClass::processHardwareUpdates()
+{
+	//called in a loop
+	if (!_hardwareUpdateRequested)
+		return;
+
+	if (millis() - _hardwareUpdateRequestTimestamp < HARDWARE_UPDATE_DEBOUNCE)
+		return;	
+
+	updateHardwareState();
+
+	_hardwareUpdateRequested = false;
 }
 
 void LedHeperClass::updateHardwareState()
-{
-	//debounce this
-
-	if (!_shouldUpdateHardware || millis() - _lastHardwareUpdate < 500)
-	{
-		return;
-	}
-
-	_lastHardwareUpdate = millis();
-	_shouldUpdateHardware = false;
-
+{	
 	if (_isOn) {
 		strip->setBrightness(_brightness);
 		uint8_t r, g, b;
@@ -325,7 +335,9 @@ void LedHeperClass::processTouchSensor()
 			powerOn();
 		}
 
-		setBrightness(_brightness + 25);
+		uint8_t step = 25;
+		uint8_t newValue = ((_brightness / step) + 1) * step;
+		setBrightness(newValue);
 
 		break;
 	}
@@ -335,45 +347,38 @@ void LedHeperClass::processTouchSensor()
 	}
 }
 
-unsigned long lastPendingStateReport = 0;
 void LedHeperClass::processPendingStatusReports()
 {
-	//return;
-	const MqttHelperClass * mqtt = mqttParameters->mqtt;
+	//called in a loop
 
-	if (pendingStatusReport[PENDING_POWER_REPORT] && (millis() - lastPendingStateReport > 200))
+	if ((millis() - _statusReportRequestTimestamp < PENDING_REPORT_DEBOUNCE))
+		return;
+
+	if (pendingStatusReport[PENDING_POWER_REPORT])
 	{
 		mqttParameters->reportPower(String(_isOn ? 1 : 0));
 
-		pendingStatusReport[PENDING_POWER_REPORT] = 0;
-		lastPendingStateReport = millis();
-		return;
+		pendingStatusReport[PENDING_POWER_REPORT] = 0;		
 	}
 
-	if (pendingStatusReport[PENDING_BRIGHTNESS_REPORT] && (millis() - lastPendingStateReport > 200))
+	if (pendingStatusReport[PENDING_BRIGHTNESS_REPORT])
 	{
 		mqttParameters->reportBrightness(String(_brightness));
 
-		pendingStatusReport[PENDING_BRIGHTNESS_REPORT] = 0;
-		lastPendingStateReport = millis();
-		return;
+		pendingStatusReport[PENDING_BRIGHTNESS_REPORT] = 0;		
 	}
 
-	if (pendingStatusReport[PENDING_HUE_REPORT] && (millis() - lastPendingStateReport > 200))
+	if (pendingStatusReport[PENDING_HUE_REPORT])
 	{
 		mqttParameters->reportHue(String(_hue));
 
-		pendingStatusReport[PENDING_HUE_REPORT] = 0;
-		lastPendingStateReport = millis();
-		return;
+		pendingStatusReport[PENDING_HUE_REPORT] = 0;			
 	}
 
-	if (pendingStatusReport[PENDING_SATURATION_REPORT] && (millis() - lastPendingStateReport > 200))
+	if (pendingStatusReport[PENDING_SATURATION_REPORT])
 	{		
 		mqttParameters->reportSaturation(String(_saturation));
 
-		pendingStatusReport[PENDING_SATURATION_REPORT] = 0;
-		lastPendingStateReport = millis();
-		return;
+		pendingStatusReport[PENDING_SATURATION_REPORT] = 0;		
 	}
 }
