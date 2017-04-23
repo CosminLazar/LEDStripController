@@ -41,8 +41,7 @@ public:
 	bool isOn();
 	void powerOn();
 	void powerOff();
-	void setBrightness(uint8_t brigtness);
-	uint8_t getBrightness();
+	void setBrightness(uint8_t brigtness);	
 	void setHue(float hue);
 	void setSaturation(float saturation);
 private:

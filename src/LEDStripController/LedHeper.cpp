@@ -165,11 +165,6 @@ void LedHeperClass::setBrightness(uint8_t brigtness)
 	reportBrightnessState();	
 }
 
-uint8_t LedHeperClass::getBrightness()
-{
-	return _brightness;
-}
-
 void LedHeperClass::setHue(float hue)
 {
 	_hue = hue;
