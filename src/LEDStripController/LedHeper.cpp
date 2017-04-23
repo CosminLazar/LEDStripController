@@ -1,10 +1,10 @@
 #include "LedHeper.h"
 
-LedHeperClass::LedHeperClass(uint8_t noOfLeds, uint8_t pin, const MqttParametersClass * mqttParameters)
+LedHeperClass::LedHeperClass(uint8_t noOfLeds, uint8_t pin, const MqttParametersClass * mqttParameters, uint8_t touchSensorPin)
 {
 	this->mqttParameters = mqttParameters;
 	this->strip = new Adafruit_NeoPixel(noOfLeds, pin, NEO_GRB + NEO_KHZ800);
-
+	this->touchSensorReader = new TouchSensorReaderClass(touchSensorPin);
 
 	FP<void, void *> connectedCb;
 	connectedCb.attach(this, &onMqttConnected);
@@ -17,30 +17,11 @@ LedHeperClass::LedHeperClass(uint8_t noOfLeds, uint8_t pin, const MqttParameters
 
 void LedHeperClass::onMqttConnected(void * data)
 {
-	const MqttHelperClass * mqtt = mqttParameters->mqtt;
-
-	mqtt->subscribe(mqttParameters->power_get);
-	mqtt->subscribe(mqttParameters->power_set);
-	mqtt->subscribe(mqttParameters->brightness_get);
-	mqtt->subscribe(mqttParameters->brightness_set);
-	mqtt->subscribe(mqttParameters->hue_get);
-	mqtt->subscribe(mqttParameters->hue_set);
-	mqtt->subscribe(mqttParameters->saturation_get);
-	mqtt->subscribe(mqttParameters->saturation_set);
-
-	String connectedTopic = mqttParameters->topLevelAddress;// +F("/connected");
-	connectedTopic.concat(F("/connected"));
-
-	//when connected, report fully operational (2)	
-	mqtt->publish(connectedTopic.c_str(), String("2").c_str());
-
-	//when disconnected, report disconnected (0)
-	uint8_t deliverAtLeastOnce = 1;
-	uint8_t retainMessage = 1;
-	mqtt->lastWillAndTestament(connectedTopic.c_str(), "0", deliverAtLeastOnce, retainMessage);
+	this->mqttParameters->subscribe();
+	this->mqttParameters->reportConnected();
 
 	reportPowerState();
-	reportBrightnessState();	
+	reportBrightnessState();
 	reportHueState();
 	reportSaturationState();
 }
@@ -49,89 +30,119 @@ void LedHeperClass::onMqttMessage(void * message) {
 	const MqttHelperClass * mqtt = mqttParameters->mqtt;
 	RESPONSE res(message);
 	String topic = res.popString();
-
-
+		
 	if (topic.indexOf(mqttParameters->topLevelAddress) != 0) {
 		//will not handle message
 		return;
-	}
+	}	
 
-	String data = res.popString();
+	if (this->mqttParameters->isSet(topic)) {
+		String data = res.popString();
 
-	if (topic.indexOf(mqttParameters->brightness_set) == 0) {
-		
-		int brightness = atoi(data.c_str());
-		//todo: boundary check
-		setBrightness(brightness);
-
-		return;
-	}
-
-	if (topic.indexOf(mqttParameters->hue_set) == 0) {
-		float hue = data.toFloat();
-		setHue(hue);
-		return;
-	}
-
-	if (topic.indexOf(mqttParameters->saturation_set) == 0) {
-		float saturation = data.toFloat();
-		setSaturation(saturation);
-		return;
-	}
-
-	if (topic.indexOf(mqttParameters->power_set) == 0) {
-		bool isOn = atoi(data.c_str()) != 0;
-
-		if (isOn) {
-			powerOn();
+		if (this->mqttParameters->isBrightness(topic)) {
+			int brightness = atoi(data.c_str());
+			//todo: boundary check
+			setBrightness(brightness);
+			return;
 		}
-		else {
-			powerOff();
+
+		if (this->mqttParameters->isHue(topic)) {
+			float hue = data.toFloat();
+			setHue(hue);
+			return;
 		}
-		return;
-	}
 
-	if (topic.indexOf(mqttParameters->brightness_get) == 0) {
-		reportBrightnessState();
-		return;
-	}
+		if (this->mqttParameters->isSaturation(topic)) {
+			float saturation = data.toFloat();
+			setSaturation(saturation);
+			return;
+		}
 
-	if (topic.indexOf(mqttParameters->hue_get) == 0) {
-		reportHueState();
-		return;
-	}
+		if (this->mqttParameters->isPower(topic)) {
+			bool isOn = atoi(data.c_str()) != 0;
 
-	if (topic.indexOf(mqttParameters->saturation_get) == 0) {
-		reportSaturationState();
-		return;
+			if (isOn) {
+				powerOn();
+			}
+			else {
+				powerOff();
+			}
+			return;
+		}
 	}
+	else {
+		if (this->mqttParameters->isGet(topic)) {
 
-	if (topic.indexOf(mqttParameters->power_get) == 0) {
-		reportPowerState();
-		return;
+			if (this->mqttParameters->isBrightness(topic)) {
+				reportBrightnessState();
+				return;
+			}
+
+			if (this->mqttParameters->isHue(topic)) {
+				reportHueState();
+				return;
+			}
+
+			if (this->mqttParameters->isSaturation(topic)) {
+				reportSaturationState();
+				return;
+			}
+
+			if (this->mqttParameters->isPower(topic)) {
+				reportPowerState();
+				return;
+			}
+		}
 	}	
 }
 
 void LedHeperClass::init()
 {
+	touchSensorReader->init();
 	strip->begin();
 	strip->show();//all off
 }
 
+void LedHeperClass::process()
+{
+	const MqttHelperClass * mqtt = mqttParameters->mqtt;
+	mqtt->process();
+	processTouchSensor();
+
+	if (!mqtt->hasPendingData()) {
+		updateHardwareState();
+	}
+
+	if (!mqtt->hasPendingData()) {
+		processPendingStatusReports();
+	}
+}
+
+bool LedHeperClass::isOn()
+{
+	return _isOn;
+}
+
 void LedHeperClass::powerOn()
 {
+	if (_isOn)
+		return;
+
 	_isOn = true;
 
-	updateHardwareState();
+	_shouldUpdateHardware = true;
 
 	reportPowerState();
 }
 
 void LedHeperClass::powerOff()
 {
+	if (!_isOn)
+		return;
+
 	_isOn = false;
-	
-	updateHardwareState();
+
+	_shouldUpdateHardware = true;
 
 	reportPowerState();
 }
@@ -140,16 +151,30 @@ void LedHeperClass::setBrightness(uint8_t brigtness)
 {
 	_brightness = brigtness;
 
-	updateHardwareState();
-	
+	_shouldUpdateHardware = true;
+
 	reportBrightnessState();
+
+	if (brigtness == 0)
+	{
+		powerOff();
+	}
+	else
+	{
+		powerOn();
+	}
+}
+
+uint8_t LedHeperClass::getBrightness()
+{
+	return _brightness;
 }
 
 void LedHeperClass::setHue(float hue)
 {
 	_hue = hue;
 
-	updateHardwareState();
+	_shouldUpdateHardware = true;
 
 	reportHueState();
 }
@@ -158,37 +183,47 @@ void LedHeperClass::setSaturation(float saturation)
 {
 	_saturation = saturation;
 
-	updateHardwareState();
+	_shouldUpdateHardware = true;
 
 	reportSaturationState();
 }
 
 void LedHeperClass::reportPowerState()
 {
-	const MqttHelperClass * mqtt = mqttParameters->mqtt;
-	mqtt->publish(mqttParameters->power_status, String(_isOn ? 1 : 0).c_str());
+	pendingStatusReport[PENDING_POWER_REPORT] = 1;
+
+
+	/*const MqttHelperClass * mqtt = mqttParameters->mqtt;
+	mqtt->publish(mqttParameters->power_status, String(_isOn ? 1 : 0).c_str(), 0, true);*/
 }
 
 void LedHeperClass::reportBrightnessState()
 {
-	const MqttHelperClass * mqtt = mqttParameters->mqtt;
-	mqtt->publish(mqttParameters->brightness_status, String(_brightness).c_str());	
+	pendingStatusReport[PENDING_BRIGHTNESS_REPORT] = 1;
 }
 
 void LedHeperClass::reportHueState()
 {
-	const MqttHelperClass * mqtt = mqttParameters->mqtt;
-	mqtt->publish(mqttParameters->hue_status, String(_hue).c_str());
+	pendingStatusReport[PENDING_HUE_REPORT] = 1;
 }
 
 void LedHeperClass::reportSaturationState()
 {
-	const MqttHelperClass * mqtt = mqttParameters->mqtt;
-	mqtt->publish(mqttParameters->saturation_status, String(_saturation).c_str());
+	pendingStatusReport[PENDING_SATURATION_REPORT] = 1;
 }
 
 void LedHeperClass::updateHardwareState()
 {
+	//debounce this
+
+	if (!_shouldUpdateHardware || millis() - _lastHardwareUpdate < 500)
+	{
+		return;
+	}
+
+	_lastHardwareUpdate = millis();
+	_shouldUpdateHardware = false;
+
 	if (_isOn) {
 		strip->setBrightness(_brightness);
 		uint8_t r, g, b;
@@ -209,7 +244,7 @@ void LedHeperClass::updateHardwareState()
 void LedHeperClass::HSV_to_RGB(float h, float s, float v, uint8_t *r, uint8_t *g, uint8_t *b)
 {
 	//HSV_to_RGB function is elegantly copied from https://gist.github.com/hdznrrd/656996
-	
+
 	int i;
 	float f, p, q, t;
 
@@ -262,5 +297,83 @@ void LedHeperClass::HSV_to_RGB(float h, float s, float v, uint8_t *r, uint8_t *g
 		*r = round(255 * v);
 		*g = round(255 * p);
 		*b = round(255 * q);
+	}
+}
+
+void LedHeperClass::processTouchSensor()
+{
+	TouchResult result = touchSensorReader->process();
+
+	switch (result)
+	{
+	case TouchResult::toggle: {
+
+		if (_isOn)
+		{
+			powerOff();
+		}
+		else {
+			powerOn();
+			if (_brightness == 0)
+				setBrightness(100);
+		}
+
+		break;
+	}
+	case TouchResult::long_press: {
+		if (!_isOn) {
+			powerOn();
+		}
+
+		setBrightness(_brightness + 25);
+
+		break;
+	}
+
+	default:
+		break;
+	}
+}
+
+unsigned long lastPendingStateReport = 0;
+void LedHeperClass::processPendingStatusReports()
+{
+	//return;
+	const MqttHelperClass * mqtt = mqttParameters->mqtt;
+
+	if (pendingStatusReport[PENDING_POWER_REPORT] && (millis() - lastPendingStateReport > 200))
+	{
+		mqttParameters->reportPower(String(_isOn ? 1 : 0));
+
+		pendingStatusReport[PENDING_POWER_REPORT] = 0;
+		lastPendingStateReport = millis();
+		return;
+	}
+
+	if (pendingStatusReport[PENDING_BRIGHTNESS_REPORT] && (millis() - lastPendingStateReport > 200))
+	{
+		mqttParameters->reportBrightness(String(_brightness));
+
+		pendingStatusReport[PENDING_BRIGHTNESS_REPORT] = 0;
+		lastPendingStateReport = millis();
+		return;
+	}
+
+	if (pendingStatusReport[PENDING_HUE_REPORT] && (millis() - lastPendingStateReport > 200))
+	{
+		mqttParameters->reportHue(String(_hue));
+
+		pendingStatusReport[PENDING_HUE_REPORT] = 0;
+		lastPendingStateReport = millis();
+		return;
+	}
+
+	if (pendingStatusReport[PENDING_SATURATION_REPORT] && (millis() - lastPendingStateReport > 200))
+	{		
+		mqttParameters->reportSaturation(String(_saturation));
+
+		pendingStatusReport[PENDING_SATURATION_REPORT] = 0;
+		lastPendingStateReport = millis();
+		return;
 	}
 }

@@ -35,18 +35,18 @@ public:
 	MqttHelperClass();
 	void init();
 	void process();
+	bool hasPendingData();
 	void subscribe(const char * topic);
 	void subscribe(const __FlashStringHelper*  topic);
 	void publish(const char * topic, char * data);
+	void publish(const char * topic, char * data, uint8_t qos, bool retain);
 	void publish(const __FlashStringHelper* topic, char * data);
+	void publish(const __FlashStringHelper* topic, char * data, uint8_t qos, bool retain);
 	boolean lastWillAndTestament(const char* topic, const char* message);
-	boolean lastWillAndTestament(const char* topic, const char* message, uint8_t qos, uint8_t retain);
+	boolean lastWillAndTestament(const char* topic, const char* message, uint8_t qos, bool retain);
 	void onConnect(FP<void, void*> callback);
 	void onDisconnect(FP<void, void*> callback);
 	void onData(FP<void, void*> callback);
 };
-
-extern MqttHelperClass MqttHelper;
-
 #endif
 

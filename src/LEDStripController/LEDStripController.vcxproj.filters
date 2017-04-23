@@ -144,13 +144,10 @@
     <ClInclude Include="..\..\..\libraries\Adafruit_NeoPixel\Adafruit_NeoPixel.h">
       <Filter>_libraries\Adafruit_NeoPixel</Filter>
     </ClInclude>
-    <ClInclude Include="LedStatus.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LedStatusConverter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MqttParameters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TouchSensorReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -263,13 +260,10 @@
     <ClCompile Include="..\..\..\libraries\Adafruit_NeoPixel\esp8266.c">
       <Filter>_libraries\Adafruit_NeoPixel</Filter>
     </ClCompile>
-    <ClCompile Include="LedStatus.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LedStatusConverter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MqttParameters.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TouchSensorReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

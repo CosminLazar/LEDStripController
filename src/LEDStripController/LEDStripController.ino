@@ -1,14 +1,8 @@
 #include "MqttParameters.h"
-#include "LedStatusConverter.h"
-#include "LedStatus.h"
-#include <Adafruit_NeoPixel.h>
 #include "LedHeper.h"
-#include "SensitiveData.h"
 #include <FP.h>
 #include "MqttHelper.h"
 #include <MemoryFree.h>
-#include "LedStatus.h"
-#include "LedStatusConverter.h"
 #include "WString.h"
 #include "MqttParameters.h"
 
@@ -19,27 +13,32 @@ const MqttParametersClass * p2;
 const LedHeperClass * led1;
 const LedHeperClass * led2;
 
-void setup() {
+const String get("/get");
+const String set("/set");
+const String status("/status");
+const String connected("/connected");
 
-	p1 = new MqttParametersClass(&mqtt, F("bedroom/light/1"));
-	p1->configurePower(F("bedroom/light/1/get"), F("bedroom/light/1/set"), F("bedroom/light/1/status"));
-	p1->configureBrigtness(F("bedroom/light/1/get/brightness"), F("bedroom/light/1/set/brightness"), F("bedroom/light/1/status/brightness"));
-	p1->configureHue(F("bedroom/light/1/get/hue"), F("bedroom/light/1/set/hue"), F("bedroom/light/1/status/hue"));
-	p1->configureSaturation(F("bedroom/light/1/get/saturation"), F("bedroom/light/1/set/saturation"), F("bedroom/light/1/status/saturation"));
+const String power("/power");
+const String brightness("/brightness");
+const String hue("/hue");
+const String saturation("/saturation"); 
+ 
+void setup() {	
+	p1 = new MqttParametersClass(&mqtt, String("b/l1"));
+	p1->configureVerbs(get, set, status, connected);
+	p1->configureComponents(power, brightness, hue, saturation);
+	
 
+	p2 = new MqttParametersClass(&mqtt, String("b/l2"));
+	p2->configureVerbs(get, set, status, connected);
+	p2->configureComponents(power, brightness, hue, saturation);
 
-	p2 = new MqttParametersClass(&mqtt, F("bedroom/light/2"));
-	p2->configurePower(F("bedroom/light/2/get"), F("bedroom/light/2/set"), F("bedroom/light/2/status"));
-	p2->configureBrigtness(F("bedroom/light/2/get/brightness"), F("bedroom/light/2/set/brightness"), F("bedroom/light/2/status/brightness"));
-	p2->configureHue(F("bedroom/light/2/get/hue"), F("bedroom/light/2/set/hue"), F("bedroom/light/2/status/hue"));
-	p2->configureSaturation(F("bedroom/light/2/get/saturation"), F("bedroom/light/2/set/saturation"), F("bedroom/light/2/status/saturation"));
-
-	led1 = new LedHeperClass(60, 5, p1);
-	led2 = new LedHeperClass(60, 6, p2);
+	led1 = new LedHeperClass(60, 5, p1, 8);
+	led2 = new LedHeperClass(60, 6, p2, 9);
 
 
 	FP<void, void *> connectedCb;
-	connectedCb.attach(&connected);
+	connectedCb.attach(&onconnected);
 	mqtt.onConnect(connectedCb);
 
 	FP<void, void *> dataCb;
@@ -49,19 +48,20 @@ void setup() {
 	led1->init();
 	led2->init();
 
-	mqtt.init();
+	mqtt.init();	
 }
 
 void loop() {
-	mqtt.process();
+	led1->process();
+	led2->process();
 }
 
-void connected(void * data) {
+void onconnected(void * data) {
 
 }
 
 void data(void * response) {
-
+	//statusRequested(NULL);
 }
 
 void statusRequested(const char * data) {

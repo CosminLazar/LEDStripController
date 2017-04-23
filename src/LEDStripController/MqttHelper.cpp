@@ -25,9 +25,7 @@ void MqttHelperClass::init()
 	SensitiveData::Read_MQTT_PASSWORD(mqttPassword);
 
 	if (!mqtt->begin(mqttClient, mqttUser, mqttPassword, 120, 1))
-		while (1);
-
-	mqtt->lwt("/lwt", "offline", 0, 0);
+		while (1);	
 
 	mqtt->connectedCb.attach(this, &MqttHelperClass::mqttConnected);
 	mqtt->disconnectedCb.attach(this, &MqttHelperClass::mqttDisconnected);
@@ -91,27 +89,42 @@ void MqttHelperClass::process() {
 	esp->process();
 }
 
+bool MqttHelperClass::hasPendingData()
+{
+	return (Serial.available() > 0);
+}
+
 void MqttHelperClass::subscribe(const char * topic) {
 	mqtt->subscribe(topic);
 }
 
 void MqttHelperClass::subscribe(const __FlashStringHelper * topic)
 {
-	char buff[64];
+	char buff[32];
 	char * topicStr = strcpy_P(buff, (const char *)topic);
 
 	subscribe(topicStr);
 }
 
 void MqttHelperClass::publish(const char * topic, char * data) {
-	mqtt->publish(topic, data);
+	publish(topic, data, 0, false);
+}
+
+void MqttHelperClass::publish(const char * topic, char * data, uint8_t qos, bool retain)
+{
+	mqtt->publish(topic, data, qos, retain);
 }
 
 void MqttHelperClass::publish(const __FlashStringHelper * topic, char * data)
 {
-	char buff[64];
+	publish(topic, data, 0, false);
+}
+
+void MqttHelperClass::publish(const __FlashStringHelper * topic, char * data, uint8_t qos, bool retain)
+{
+	char buff[32];
 	char * topicStr = strcpy_P(buff, (const char *)topic);
-	publish(topicStr, data);
+	publish(topicStr, data, qos, retain);
 }
 
 boolean MqttHelperClass::lastWillAndTestament(const char * topic, const char * message)
@@ -119,7 +132,7 @@ boolean MqttHelperClass::lastWillAndTestament(const char * topic, const char * m
 	return lastWillAndTestament(topic, message, 0, 0);
 }
 
-boolean MqttHelperClass::lastWillAndTestament(const char * topic, const char * message, uint8_t qos, uint8_t retain)
+boolean MqttHelperClass::lastWillAndTestament(const char * topic, const char * message, uint8_t qos, bool retain)
 {
 	return mqtt->lwt(topic, message, qos, retain);
 }

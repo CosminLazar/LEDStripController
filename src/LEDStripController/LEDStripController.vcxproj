@@ -115,11 +115,10 @@
     <ClInclude Include="..\..\..\libraries\LinkedList\LinkedList.h" />
     <ClInclude Include="..\..\..\libraries\MemoryFree\MemoryFree.h" />
     <ClInclude Include="LedHeper.h" />
-    <ClInclude Include="LedStatus.h" />
-    <ClInclude Include="LedStatusConverter.h" />
     <ClInclude Include="MqttHelper.h" />
     <ClInclude Include="MqttParameters.h" />
     <ClInclude Include="SensitiveData.h" />
+    <ClInclude Include="TouchSensorReader.h" />
     <ClInclude Include="__vm\.LEDStripController.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
@@ -157,11 +156,10 @@
     <ClCompile Include="..\..\..\libraries\espduino\ringbuf.c" />
     <ClCompile Include="..\..\..\libraries\MemoryFree\MemoryFree.cpp" />
     <ClCompile Include="LedHeper.cpp" />
-    <ClCompile Include="LedStatus.cpp" />
-    <ClCompile Include="LedStatusConverter.cpp" />
     <ClCompile Include="MqttHelper.cpp" />
     <ClCompile Include="MqttParameters.cpp" />
     <ClCompile Include="SensitiveData.cpp" />
+    <ClCompile Include="TouchSensorReader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -4,41 +4,56 @@
 #define _MQTTPARAMETERS_h
 
 #if defined(ARDUINO) && ARDUINO >= 100
-	#include "arduino.h"
+#include "arduino.h"
 #else
-	#include "WProgram.h"
+#include "WProgram.h"
 #endif
 
 #include "MqttHelper.h"
 
 class MqttParametersClass
 {
- public:
-	 const MqttHelperClass * mqtt;
-	 const __FlashStringHelper * topLevelAddress;	 
+public:
+	const MqttHelperClass * mqtt;
+	const String topLevelAddress;
 
-	 const __FlashStringHelper * power_get;
-	 const __FlashStringHelper * power_set;
-	 const __FlashStringHelper * power_status;
+private:
+	String _verb_get;
+	String _verb_set;
+	String _verb_status;
+	String _verb_connected;
 
-	 const __FlashStringHelper * brightness_get;
-	 const __FlashStringHelper * brightness_set;
-	 const __FlashStringHelper * brightness_status;
+	String _power;
+	String _brightness;
+	String _hue;
+	String _saturation;
 
-	 const __FlashStringHelper * hue_get;
-	 const __FlashStringHelper * hue_set;
-	 const __FlashStringHelper * hue_status;
+public:
+	MqttParametersClass(const MqttHelperClass * mqttBridge, const String & topLevelAddress)
+		:mqtt(mqttBridge), topLevelAddress(topLevelAddress) {};
 
-	 const __FlashStringHelper * saturation_get;
-	 const __FlashStringHelper * saturation_set;
-	 const __FlashStringHelper * saturation_status;
- public:
-	MqttParametersClass(const MqttHelperClass * mqttBridge, const __FlashStringHelper * topLevelAddress) :mqtt(mqttBridge), topLevelAddress(topLevelAddress) {};
-	
-	void configureBrigtness(const __FlashStringHelper * getTopic, const __FlashStringHelper * setTopic, const __FlashStringHelper * statusTopic);
-	void configurePower(const __FlashStringHelper * getTopic, const __FlashStringHelper * setTopic, const __FlashStringHelper * statusTopic);
-	void configureHue(const __FlashStringHelper * getTopic, const __FlashStringHelper * setTopic, const __FlashStringHelper * statusTopic);
-	void configureSaturation(const __FlashStringHelper * getTopic, const __FlashStringHelper * setTopic, const __FlashStringHelper * statusTopic);
+	void configureVerbs(const String & get, const String & set, const String & status, const String & connected);
+	void configureComponents(const String & power, const String & brightness, const String & hue, const String & saturation);
+	void subscribe();
+	void reportConnected();
+
+	bool isGet(const String & topic);
+	bool isSet(const String & topic);
+
+	bool isPower(const String & topic);
+	bool isBrightness(const String & topic);
+	bool isHue(const String & topic);
+	bool isSaturation(const String & topic);
+
+	void reportPower(const String & value);
+	void reportBrightness(const String & value);
+	void reportHue(const String & value);
+	void reportSaturation(const String & value);
+private:
+	void subscribeTo(const String & verb, const String & resource);
+	bool isVerb(const String & topic, const String & verb);
+	bool isResource(const String & topic, const String & resource);
+	void reportResourceValue(const String & resource, const String & value);
 };
 
 #endif
