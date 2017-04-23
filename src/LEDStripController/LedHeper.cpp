@@ -15,6 +15,28 @@ LedHeperClass::LedHeperClass(uint8_t noOfLeds, uint8_t pin, const MqttParameters
 	this->mqttParameters->mqtt->onData(dataReceivedCb);
 }
 
+void LedHeperClass::init()
+{
+	touchSensorReader->init();
+	strip->begin();
+	strip->show();//all off
+}
+
+void LedHeperClass::process()
+{
+	const MqttHelperClass * mqtt = mqttParameters->mqtt;
+	mqtt->process();
+	processTouchSensor();
+
+	if (!mqtt->hasPendingData()) {
+		processHardwareUpdates();
+	}
+
+	if (!mqtt->hasPendingData()) {
+		processPendingStatusReports();
+	}
+}
+
 void LedHeperClass::onMqttConnected(void * data)
 {
 	this->mqttParameters->subscribe();
@@ -31,7 +53,7 @@ void LedHeperClass::onMqttMessage(void * message) {
 	RESPONSE res(message);
 	String topic = res.popString();
 		
-	if (topic.indexOf(mqttParameters->topLevelAddress) != 0) {
+	if (!this->mqttParameters->isTarget(topic)) {
 		//will not handle message
 		return;
 	}	
@@ -96,27 +118,7 @@ void LedHeperClass::onMqttMessage(void * message) {
 	}	
 }
 
-void LedHeperClass::init()
-{
-	touchSensorReader->init();
-	strip->begin();
-	strip->show();//all off
-}
 
-void LedHeperClass::process()
-{
-	const MqttHelperClass * mqtt = mqttParameters->mqtt;
-	mqtt->process();
-	processTouchSensor();
-
-	if (!mqtt->hasPendingData()) {
-		processHardwareUpdates();
-	}
-
-	if (!mqtt->hasPendingData()) {
-		processPendingStatusReports();
-	}
-}
 
 bool LedHeperClass::isOn()
 {

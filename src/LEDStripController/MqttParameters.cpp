@@ -37,7 +37,7 @@ void MqttParametersClass::subscribe()
 
 void MqttParametersClass::reportConnected()
 {
-	String connectedTopic = topLevelAddress + _verb_connected;
+	String connectedTopic = _topLevelAddress + _verb_connected;
 	uint8_t deliverAtMostOnce = 0;
 	bool retainMessage = true;
 
@@ -48,10 +48,15 @@ void MqttParametersClass::reportConnected()
 	mqtt->lastWillAndTestament(connectedTopic.c_str(), "0", deliverAtMostOnce, retainMessage);
 }
 
+bool MqttParametersClass::isTarget(const String & topic)
+{
+	bool isTarget = topic.indexOf(_topLevelAddress) == 0;
+	return isTarget;
+}
+
 bool MqttParametersClass::isGet(const String & topic)
 {
 	return isVerb(topic, _verb_get);
-
 }
 
 bool MqttParametersClass::isSet(const String & topic)
@@ -101,7 +106,7 @@ void MqttParametersClass::reportSaturation(const String & value)
 
 void MqttParametersClass::subscribeTo(const String & verb, const String & resource)
 {
-	String fullTopic = topLevelAddress + verb + resource;
+	String fullTopic = _topLevelAddress + verb + resource;
 
 	mqtt->subscribe(fullTopic.c_str());
 }
@@ -120,7 +125,7 @@ bool MqttParametersClass::isResource(const String & topic, const String & resour
 
 void MqttParametersClass::reportResourceValue(const String & resource, const String & value)
 {
-	String fullTopic = topLevelAddress + _verb_status + resource;
+	String fullTopic = _topLevelAddress + _verb_status + resource;
 
 	mqtt->publish(fullTopic.c_str(), value.c_str(), 0, true);
 }

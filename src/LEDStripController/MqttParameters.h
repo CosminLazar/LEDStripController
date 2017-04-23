@@ -14,10 +14,11 @@
 class MqttParametersClass
 {
 public:
-	const MqttHelperClass * mqtt;
-	const String topLevelAddress;
+	const MqttHelperClass * mqtt;	
 
 private:
+	const String _topLevelAddress;
+
 	String _verb_get;
 	String _verb_set;
 	String _verb_status;
@@ -30,13 +31,14 @@ private:
 
 public:
 	MqttParametersClass(const MqttHelperClass * mqttBridge, const String & topLevelAddress)
-		:mqtt(mqttBridge), topLevelAddress(topLevelAddress) {};
+		:mqtt(mqttBridge), _topLevelAddress(topLevelAddress) {};
 
 	void configureVerbs(const String & get, const String & set, const String & status, const String & connected);
 	void configureComponents(const String & power, const String & brightness, const String & hue, const String & saturation);
 	void subscribe();
 	void reportConnected();
 
+	bool isTarget(const String & topic);
 	bool isGet(const String & topic);
 	bool isSet(const String & topic);
 
