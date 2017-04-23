@@ -117,7 +117,7 @@ private:
   
   boolean _debugEn;
   PROTO _proto;
-  uint8_t _protoBuf[512];
+  uint8_t _protoBuf[128];
   int _chip_pd;
   
 
