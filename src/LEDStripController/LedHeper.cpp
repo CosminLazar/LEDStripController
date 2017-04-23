@@ -338,6 +338,9 @@ void LedHeperClass::processTouchSensor()
 		uint8_t newValue = ((_brightness / step) + 1) * step;
 		setBrightness(newValue);
 
+		//cannot work with the debounced hardware update here
+		//need to show "real-time" updates
+		updateHardwareState();
 		break;
 	}
 
