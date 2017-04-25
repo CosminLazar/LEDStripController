@@ -25,7 +25,7 @@ void MqttHelperClass::init()
 	SensitiveData::Read_MQTT_PASSWORD(mqttPassword);
 
 	if (!mqtt->begin(mqttClient, mqttUser, mqttPassword, 120, 1))
-		while (1);	
+		while (1);
 
 	mqtt->connectedCb.attach(this, &MqttHelperClass::mqttConnected);
 	mqtt->disconnectedCb.attach(this, &MqttHelperClass::mqttDisconnected);
@@ -42,6 +42,13 @@ void MqttHelperClass::init()
 	esp->wifiConnect(ssid, password);
 }
 
+void MqttHelperClass::beginMqttConnection()
+{
+	char mqttHost[10];
+	SensitiveData::Read_MQTT_HOST(mqttHost);
+	mqtt->connect(mqttHost, 1883);
+}
+
 void MqttHelperClass::wifiCallback(void * response)
 {
 	uint32_t status;
@@ -51,14 +58,10 @@ void MqttHelperClass::wifiCallback(void * response)
 		res.popArgs((uint8_t*)&status, 4);
 
 		if (status == STATION_GOT_IP) {
-			//WIFI connected			
-			char mqttHost[10];
-			SensitiveData::Read_MQTT_HOST(mqttHost);
-			mqtt->connect(mqttHost, 1883);
-			wifiConnected = true;
+			//WIFI connected						
+			beginMqttConnection();
 		}
 		else {
-			wifiConnected = false;
 			mqtt->disconnect();
 		}
 	}
@@ -76,6 +79,10 @@ void MqttHelperClass::mqttDisconnected(void* response) {
 	{
 		disconnectCb.get(i)(response);
 	}
+
+	//only the mqtt connection needs to be re-established
+	//the sepparate esp chip handles wifi reconnection auto-magically
+	beginMqttConnection();
 }
 
 void MqttHelperClass::mqttDataCallback(void* response) {

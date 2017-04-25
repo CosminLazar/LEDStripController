@@ -20,18 +20,18 @@ class MqttHelperClass
 {
 private:
 	ESP *esp;
-	MQTT *mqtt;	
+	MQTT *mqtt;
 	LinkedList<FP<void, void*>> connectCb = LinkedList<FP<void, void*>>();
 	LinkedList<FP<void, void*>> disconnectCb = LinkedList<FP<void, void*>>();
 	LinkedList<FP<void, void*>> dataCb = LinkedList<FP<void, void*>>();
-
+		
+	void beginMqttConnection();
 	void wifiCallback(void* response);
 	void mqttConnected(void* response);
 	void mqttDisconnected(void* response);
 	void mqttDataCallback(void* response);
 public:
-	bool wifiConnected;
-	bool mqttIsConnected;
+
 	MqttHelperClass();
 	void init();
 	void process();
