@@ -21,8 +21,17 @@ TouchResult TouchSensorReaderClass::process()
 	if (_touchState == TOUCHSTATE_IDLE) {
 		if (isPressed == 1)
 		{
-			_startedReadingAt = millis();
-			_touchState = TOUCHSTATE_READINGINPUT;
+			if (_startedReadingAt == 0)
+			{
+				_startedReadingAt = millis();
+			}
+			else {
+				if (millis() - _startedReadingAt > READING_INPUT_THRESHOLD_TIME)
+					_touchState = TOUCHSTATE_READINGINPUT;
+			}
+		}
+		else {
+			EnterIdleState();
 		}
 	}
 	else {
@@ -32,7 +41,7 @@ TouchResult TouchSensorReaderClass::process()
 					_touchState = TOUCHSTATE_READINGLONGINPUT;
 				}
 			}
-			else {				
+			else {
 				EnterIdleState();
 
 				//was on, now off -> toggle
