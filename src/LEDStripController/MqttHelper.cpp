@@ -97,18 +97,18 @@ void MqttHelperClass::runWifiWatchDog()
 {
 	//the esp seems to disconnect from time to time
 	//if it is not ready do a power disconnect and re-init the whole connection process 
-	if (millis() - lastWifiDogTimestamp > WIFI_WATCHDOG_INTERVAL)
+	if (millis() - lastWifiDogTimestamp < WIFI_WATCHDOG_INTERVAL)
+		return;
+
+	if (!esp->ready())
 	{
-		boolean espReady = esp->ready();
+		esp->disable();
+		delay(500);
 
-		if (!espReady)
-		{
-			esp->disable();
-			delay(500);
-
-			init();
-		}
+		init();
 	}
+
+	lastWifiDogTimestamp = millis();
 }
 
 void MqttHelperClass::process() {
