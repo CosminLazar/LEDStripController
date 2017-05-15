@@ -16,9 +16,12 @@
 #include <LinkedList.h>
 #include <HashMap.h>
 
+#define WIFI_WATCHDOG_INTERVAL 10000
+
 class MqttHelperClass
 {
 private:
+	unsigned long lastWifiDogTimestamp = 0;
 	ESP *esp;
 	MQTT *mqtt;
 	LinkedList<FP<void, void*>> connectCb = LinkedList<FP<void, void*>>();
@@ -30,6 +33,7 @@ private:
 	void mqttConnected(void* response);
 	void mqttDisconnected(void* response);
 	void mqttDataCallback(void* response);
+	void runWifiWatchDog();
 public:
 
 	MqttHelperClass();

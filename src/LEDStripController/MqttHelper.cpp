@@ -81,7 +81,8 @@ void MqttHelperClass::mqttDisconnected(void* response) {
 	}
 
 	//only the mqtt connection needs to be re-established
-	//the sepparate esp chip handles wifi reconnection auto-magically
+	//the sepparate esp chip handles wifi reconnection auto-magically almost all the time
+	//when the magic does not work, the wifi watchdog should reestablish it
 	beginMqttConnection();
 }
 
@@ -92,8 +93,28 @@ void MqttHelperClass::mqttDataCallback(void* response) {
 	}
 }
 
+void MqttHelperClass::runWifiWatchDog()
+{
+	//the esp seems to disconnect from time to time
+	//if it is not ready do a power disconnect and re-init the whole connection process 
+	if (millis() - lastWifiDogTimestamp > WIFI_WATCHDOG_INTERVAL)
+	{
+		boolean espReady = esp->ready();
+
+		if (!espReady)
+		{
+			esp->disable();
+			delay(500);
+
+			init();
+		}
+	}
+}
+
 void MqttHelperClass::process() {
 	esp->process();
+
+	runWifiWatchDog();
 }
 
 bool MqttHelperClass::hasPendingData()
