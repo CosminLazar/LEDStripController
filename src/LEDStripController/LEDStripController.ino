@@ -39,8 +39,8 @@ void setup() {
 	p2->configureVerbs(get, set, status, connected);
 	p2->configureComponents(power, brightness, hue, saturation);
 
-	led1 = new LedHeperClass(60, LED1_HARDWARE_CONTROL_PIN, p1, LED1_TOUCH_CONTROL_PIN);
-	led2 = new LedHeperClass(60, LED2_HARDWARE_CONTROL_PIN, p2, LED2_TOUCH_CONTROL_PIN);
+	led1 = new LedHeperClass(44, LED1_HARDWARE_CONTROL_PIN, p1, LED1_TOUCH_CONTROL_PIN);
+	led2 = new LedHeperClass(44, LED2_HARDWARE_CONTROL_PIN, p2, LED2_TOUCH_CONTROL_PIN);
 
 	FP<void, void *> dataCb;
 	dataCb.attach(&data);
