@@ -1,5 +1,5 @@
 # LEDStripController
-Arduino sketch for controlling two WS2812B LED strips via MQTT messages.
+Arduino sketch for controlling two WS2812B LED strips via MQTT messages, HomeKit, Siri and touch sensor.
 
 The project is 100% compatible with [Homekit2Mqtt](https://github.com/hobbyquaker/homekit2mqtt) and can be controlled by HomeKit and Siri.
 
